@@ -1,0 +1,356 @@
+<html>
+
+<head>
+    <title>Triangle Generator</title>
+</head>
+<style>
+    .labelInputs {
+        width: 45px;
+    }
+
+    .slider {
+        width: 500px;
+    }
+</style>
+
+<body>
+    <h1>
+        Triangle Generator
+    </h1>
+    DPI: <input class="triggerRedraw" id="dpi" type="number" value="300">
+    <table>
+        <thead>
+            <tr>
+                <td>A</td>
+                <td>B</td>
+                <td>C</td>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>&alpha;: <input class="inputs angles" id="inA" type="text"></td>
+                <td>&beta;: <input class="inputs angles" id="inB" type="text"></td>
+                <td>&gamma;: <input class="inputs angles" id="inC" type="text"></td>
+            </tr>
+            <tr>
+                <td>a: <input class="inputs lengths" id="ina" type="text"></td>
+                <td>b: <input class="inputs lengths" id="inb" type="text"></td>
+                <td>c: <input class="inputs lengths" id="inc" type="text"></td>
+            </tr>
+        </tbody>
+    </table>
+    <table>
+        <tr>
+            <td><input class="slider" type="range" min="-180" max="180" value="0" id="rotationSlider"></td>
+            <td><input type="number" min="-180" max="180" value="0" id="rotationText"></td>
+        </tr>
+    </table>
+    <table>
+        <tr>
+            <td><input class="triggerRedraw" type="checkbox" id="angleLables" checked></td>
+            <td>A: <input class="triggerRedraw labelInputs" type="text" id="labelA" value="A"></td>
+            <td>B: <input class="triggerRedraw labelInputs" type="text" id="labelB" value="B"></td>
+            <td>C: <input class="triggerRedraw labelInputs" type="text" id="labelC" value="C"></td>
+        </tr>
+    </table>
+    <input id="angA" type="hidden">
+    <input id="angB" type="hidden">
+    <input id="angC" type="hidden">
+    <input id="lena" type="hidden">
+    <input id="lenb" type="hidden">
+    <input id="lenc" type="hidden">
+    <input id="rotation" type="hidden">
+    <p id="debug"></p>
+    <canvas id="myCanvas" width="400" height="400"></canvas>
+    <script type="text/javascript">
+        var canvas = document.getElementById("myCanvas")
+        var ctx = canvas.getContext("2d")
+        document.querySelectorAll(".inputs").forEach(ele => {
+            ele.addEventListener("change", processInputs)
+        })
+        document.getElementById("rotationSlider").addEventListener("input", rotationSliderChanged)
+        document.getElementById("rotationText").addEventListener("change", rotationTextChanged)
+        document.querySelectorAll(".triggerRedraw").forEach(ele => {
+            ele.addEventListener("change", event => {
+                tryDrawTriangle()
+            })
+        })
+
+        function processInputs(e) {
+            let angles = [
+                parseFloat(document.getElementById("inA").value),
+                parseFloat(document.getElementById("inB").value),
+                parseFloat(document.getElementById("inC").value),
+            ]
+            let lengths = [
+                parseFloat(document.getElementById("ina").value),
+                parseFloat(document.getElementById("inb").value),
+                parseFloat(document.getElementById("inc").value),
+            ]
+
+            for (let i = 0; i < 2; i++) {
+                let valid_angles = angles.filter(x => !isNaN(x))
+                let valid_lengths = lengths.filter(x => !isNaN(x))
+                if (valid_angles.length == 2) applySumOfInteriorAngleRule(angles, valid_angles)
+                if (valid_angles.length == 0 && valid_lengths.length == 3) applyCosineRuleWithLengths(angles, lengths)
+                if ((valid_angles.length + valid_lengths.length == 3) && haveNoPairs(angles, lengths)) applyCosineRuleWithAngle(angles, lengths)
+                applySineRule(angles, lengths)
+            }
+
+            writeToHidden(angles, lengths)
+            tryDrawTriangle()
+        }
+
+        function rotationSliderChanged(e) {
+            let rotation = e.target.value
+            document.getElementById("rotationText").value = rotation
+            document.getElementById("rotation").value = rotation
+
+            tryDrawTriangle()
+        }
+
+        function rotationTextChanged(e) {
+            let rotation = e.target.value
+            document.getElementById("rotationSlider").value = rotation
+            document.getElementById("rotation").value = rotation
+
+            tryDrawTriangle()
+        }
+
+        function applySumOfInteriorAngleRule(angles, valid_angles) {
+            sum = valid_angles.reduce((x, y) => x + y)
+            for (let i = 0; i < 3; i++) {
+                if (isNaN(angles[i])) {
+                    angles[i] = 180 - sum
+                }
+            }
+        }
+
+        function applySineRule(angles, lengths) {
+            let have_pair = false
+            for (let i = 0; i < 3; i++) {
+                if (!isNaN(angles[i]) && !isNaN(lengths[i])) {
+                    var k = lengths[i] / Math.sin(angles[i] * Math.PI / 180)
+                    have_pair = true
+                    break
+                }
+            }
+
+            if (!have_pair) return
+
+            for (let i = 0; i < 3; i++) {
+                if (!isNaN(angles[i]) && isNaN(lengths[i])) {
+                    let length = k * Math.sin(angles[i] * Math.PI / 180)
+                    lengths[i] = roundToDecimal(length, 5)
+                }
+                else if (isNaN(angles[i]) && !isNaN(lengths[i])) {
+                    let ratio = lengths[i] / k
+                    let inversed = false
+                    if (ratio > 1) {
+                        ratio = 1 / ratio
+                        inversed = true
+                    }
+                    let angle = Math.asin(ratio) * 180 / Math.PI
+                    if (inversed) angle = 1 / angle
+                    angles[i] = roundToDecimal(angle, 5)
+                }
+            }
+        }
+
+        function applyCosineRuleWithLengths(angles, lengths) {
+            let idx = [0, 1, 2]
+            for (let i = 0; i < 2; i++) {
+                let a = lengths[idx[0]]
+                let b = lengths[idx[1]]
+                let c = lengths[idx[2]]
+
+                let cosC = (a ** 2 + b ** 2 - c ** 2) / (2 * a * b)
+                let angC = Math.acos(cosC) * 180 / Math.PI
+                angles[idx[2]] = roundToDecimal(angC, 5)
+                idx.push(idx.shift())
+            }
+        }
+
+        function applyCosineRuleWithAngle(angles, lengths) {
+            let idx = []
+            for (let i = 0; i < 3; i++) {
+                if (isNaN(angles[i]) && !isNaN(lengths[i])) idx.unshift(i)
+                else if (!isNaN(angles[i]) && isNaN(lengths[i])) idx.push(i)
+            }
+            let a = lengths[idx[0]]
+            let b = lengths[idx[1]]
+            let angC = angles[idx[2]]
+
+            let c = Math.sqrt(a ** 2 + b ** 2 - 2 * a * b * Math.cos(angC * Math.PI / 180))
+            lengths[idx[2]] = roundToDecimal(c, 5)
+        }
+
+        function haveNoPairs(angles, lengths) {
+            for (let i = 0; i < 3; i++) {
+                if (!isNaN(angles[i]) && !isNaN(lengths[i])) return false
+            }
+            return true
+        }
+
+        function haveEnoughInfomation(angles, lengths) {
+            if ((!isNaN(angles[0]) && !isNaN(lengths[1])) && !isNaN(lengths[2])) return true
+            return false
+        }
+
+        function roundToDecimal(x, n) {
+            let k = 10 ** n
+            return Math.round(x * k) / k
+        }
+
+        function writeToHidden(angles, lengths) {
+            document.getElementById("angA").value = angles[0]
+            document.getElementById("angB").value = angles[1]
+            document.getElementById("angC").value = angles[2]
+            document.getElementById("lena").value = lengths[0]
+            document.getElementById("lenb").value = lengths[1]
+            document.getElementById("lenc").value = lengths[2]
+
+            angle_inputs = document.querySelectorAll(".inputs.angles")
+            setPlaceholders(angle_inputs, angles)
+            length_inputs = document.querySelectorAll(".inputs.lengths")
+            setPlaceholders(length_inputs, lengths)
+        }
+
+        function setPlaceholders(inputs, values) {
+            for (let i = 0; i < 3; i++) {
+                if (inputs[i].value.length == 0 && !isNaN(values[i]))
+                    inputs[i].placeholder = values[i]
+                else
+                    inputs[i].placeholder = ""
+            }
+        }
+
+        function tryDrawTriangle() {
+            angles = [
+                document.getElementById("angA").value,
+                document.getElementById("angB").value,
+                document.getElementById("angC").value
+            ]
+            lengths = [
+                document.getElementById("lena").value,
+                document.getElementById("lenb").value,
+                document.getElementById("lenc").value
+            ]
+            rotation = document.getElementById("rotation").value
+            if (haveEnoughInfomation(angles, lengths)) {
+                let dpi = document.getElementById("dpi").value
+                let points = convertTriangleToPoints(angles, lengths, dpiToLengthFactor(dpi))
+                points = rotatePoints(points, rotation)
+                points = shiftPoints(points)
+                drawTriangle(points)
+            }
+        }
+
+        function dpiToLengthFactor(dpi) {
+            return dpi / 2.54
+        }
+
+        function convertTriangleToPoints(angles, lengths, length_factor) {
+            let pointA = [0, 0]
+            let pointB = [lengths[2] * length_factor, 0]
+            let pointC = [
+                Math.cos(angles[0] * Math.PI / 180) * lengths[1] * length_factor,
+                Math.sin(angles[0] * Math.PI / 180) * lengths[1] * length_factor
+            ]
+
+            return [pointA, pointB, pointC]
+        }
+
+        function rotatePoints(points, rotation) {
+            let rad = rotation * Math.PI / 180
+            for (let i = 0; i < 3; i++) {
+                let x = points[i][0]
+                let y = points[i][1]
+                points[i][0] = x * Math.cos(rad) - y * Math.sin(rad)
+                points[i][1] = x * Math.sin(rad) + y * Math.cos(rad)
+            }
+
+            return points
+        }
+
+        function shiftPoints(points) {
+            let minX = 0
+            let minY = 0
+            points.forEach(point => {
+                if (point[0] < minX) minX = point[0]
+                if (point[1] < minY) minY = point[1]
+            })
+
+            for (let i = 0; i < 3; i++) {
+                points[i][0] -= minX
+                points[i][1] -= minY
+            }
+
+            return points
+        }
+
+        function getAngleLabelPoints(points, fontPx) {
+            let center = getCenterPoint(points)
+            let labelPoints = []
+            points.forEach(point => {
+                let distance = Math.sqrt((point[0] - center[0]) ** 2 + (point[1] - center[1]) ** 2)
+                let bearing = Math.atan2(point[0] - center[0], point[1] - center[1])
+                let labelDistance = distance + (fontPx * 1.1)
+                let pointX = center[0] + Math.sin(bearing) * labelDistance
+                let pointY = center[1] + Math.cos(bearing) * labelDistance
+                labelPoints.push([pointX, pointY])
+            })
+            return labelPoints
+        }
+
+        function getCenterPoint(points) {
+            let center = [0, 0]
+            points.forEach(point => {
+                center[0] += point[0]
+                center[1] += point[1]
+            })
+            center[0] = center[0] / 3
+            center[1] = center[1] / 3
+            return center
+        }
+
+        function drawTriangle(points) {
+            margin = 50
+            resizeCanvas(canvas, points, margin)
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height)
+            ctx.translate(margin, margin)
+            ctx.beginPath()
+            ctx.moveTo(points[0][0], points[0][1])
+            ctx.lineTo(points[1][0], points[1][1])
+            ctx.lineTo(points[2][0], points[2][1])
+            ctx.closePath()
+            ctx.stroke()
+
+            labelPoints = getAngleLabelPoints(points, 20)
+            if (document.getElementById("angleLables").checked) {
+                ctx.textAlign = "center"
+            ctx.textBaseline = "middle"
+            ctx.font = "20px Arial"
+            ctx.fillText(document.getElementById("labelA").value, labelPoints[0][0], labelPoints[0][1])
+            ctx.fillText(document.getElementById("labelB").value, labelPoints[1][0], labelPoints[1][1])
+            ctx.fillText(document.getElementById("labelC").value, labelPoints[2][0], labelPoints[2][1])
+            }
+        }
+
+        function resizeCanvas(canvas, points, margin) {
+            let maxX = 0
+            let maxY = 0
+            points.forEach(point => {
+                if (point[0] > maxX) maxX = point[0]
+                if (point[1] > maxY) maxY = point[1]
+            })
+            canvas.width = maxX + margin * 2
+            canvas.height = maxY + margin * 2
+        }
+
+
+    </script>
+</body>
+
+</html>
