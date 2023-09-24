@@ -8,33 +8,32 @@ window.onload = () => {
     document.getElementById("rotationText").addEventListener("change", rotationTextChanged)
     document.querySelectorAll(".triggerRedraw").forEach(ele => {
         ele.addEventListener("change", event => {
-            tryDrawTriangle()
+            processInputs()
         })
     })
 
     function processInputs() {
-        let angles = [
+        const angles = [
             parseFloat((document.getElementById("inA") as HTMLInputElement).value),
             parseFloat((document.getElementById("inB") as HTMLInputElement).value),
             parseFloat((document.getElementById("inC") as HTMLInputElement).value),
         ]
-        let lengths = [
+        const lengths = [
             parseFloat((document.getElementById("ina") as HTMLInputElement).value),
             parseFloat((document.getElementById("inb") as HTMLInputElement).value),
             parseFloat((document.getElementById("inc") as HTMLInputElement).value),
         ]
 
-        for (let i = 0; i < 2; i++) {
-            let valid_angles = angles.filter(x => !isNaN(x))
-            let valid_lengths = lengths.filter(x => !isNaN(x))
-            if (valid_angles.length == 2) applySumOfInteriorAngleRule(angles, valid_angles)
-            if (valid_angles.length == 0 && valid_lengths.length == 3) applyCosineRuleWithLengths(angles, lengths)
-            if ((valid_angles.length + valid_lengths.length == 3) && haveNoPairs(angles, lengths)) applyCosineRuleWithAngle(angles, lengths)
-            applySineRule(angles, lengths)
+        const triangle = new Triangle(angles, lengths)
+        const rotation = parseFloat((document.getElementById("rotation") as HTMLInputElement).value)
+        if (triangle.haveEnoughInfomation()) {
+            writePlaceholders(triangle)
+            const dpi = parseFloat((document.getElementById("dpi") as HTMLInputElement).value)
+            let points = convertTriangleToPoints(triangle.angles, triangle.lengths, dpiToLengthFactor(dpi))
+            points = rotatePoints(points, rotation)
+            points = shiftPoints(points)
+            drawTriangle(points)
         }
-
-        writeToHidden(angles, lengths)
-        tryDrawTriangle()
     }
 
     function rotationSliderChanged(e: Event) {
@@ -44,7 +43,7 @@ window.onload = () => {
         const rotationEle = document.getElementById("rotation") as HTMLInputElement
         rotationEle.value = rotation
 
-        tryDrawTriangle()
+        processInputs()
     }
 
     function rotationTextChanged(e: Event) {
@@ -54,106 +53,15 @@ window.onload = () => {
         const rotationEle = document.getElementById("rotation") as HTMLInputElement
         rotationEle.value = rotation
 
-        tryDrawTriangle()
+        processInputs()
     }
 
-    function applySumOfInteriorAngleRule(angles: number[], valid_angles: number[]) {
-        const sum = valid_angles.reduce((x, y) => x + y)
-        for (let i = 0; i < 3; i++) {
-            if (isNaN(angles[i])) {
-                angles[i] = 180 - sum
-            }
-        }
-    }
 
-    function applySineRule(angles: number[], lengths: number[]) {
-        let have_pair = false
-        for (let i = 0; i < 3; i++) {
-            if (!isNaN(angles[i]) && !isNaN(lengths[i])) {
-                var k = lengths[i] / Math.sin(angles[i] * Math.PI / 180)
-                have_pair = true
-                break
-            }
-        }
-
-        if (!have_pair) return
-
-        for (let i = 0; i < 3; i++) {
-            if (!isNaN(angles[i]) && isNaN(lengths[i])) {
-                let length = k * Math.sin(angles[i] * Math.PI / 180)
-                lengths[i] = roundToDecimal(length, 5)
-            }
-            else if (isNaN(angles[i]) && !isNaN(lengths[i])) {
-                let ratio = lengths[i] / k
-                let inversed = false
-                if (ratio > 1) {
-                    ratio = 1 / ratio
-                    inversed = true
-                }
-                let angle = Math.asin(ratio) * 180 / Math.PI
-                if (inversed) angle = 1 / angle
-                angles[i] = roundToDecimal(angle, 5)
-            }
-        }
-    }
-
-    function applyCosineRuleWithLengths(angles: number[], lengths: number[]) {
-        let idx = [0, 1, 2]
-        for (let i = 0; i < 2; i++) {
-            let a = lengths[idx[0]]
-            let b = lengths[idx[1]]
-            let c = lengths[idx[2]]
-
-            let cosC = (a ** 2 + b ** 2 - c ** 2) / (2 * a * b)
-            let angC = Math.acos(cosC) * 180 / Math.PI
-            angles[idx[2]] = roundToDecimal(angC, 5)
-            idx.push(idx.shift())
-        }
-    }
-
-    function applyCosineRuleWithAngle(angles: number[], lengths: number[]) {
-        let idx = []
-        for (let i = 0; i < 3; i++) {
-            if (isNaN(angles[i]) && !isNaN(lengths[i])) idx.unshift(i)
-            else if (!isNaN(angles[i]) && isNaN(lengths[i])) idx.push(i)
-        }
-        let a = lengths[idx[0]]
-        let b = lengths[idx[1]]
-        let angC = angles[idx[2]]
-
-        let c = Math.sqrt(a ** 2 + b ** 2 - 2 * a * b * Math.cos(angC * Math.PI / 180))
-        lengths[idx[2]] = roundToDecimal(c, 5)
-    }
-
-    function haveNoPairs(angles: number[], lengths: number[]) {
-        for (let i = 0; i < 3; i++) {
-            if (!isNaN(angles[i]) && !isNaN(lengths[i])) return false
-        }
-        return true
-    }
-
-    function haveEnoughInfomation(angles: number[], lengths: number[]) {
-        if ((!isNaN(angles[0]) && !isNaN(lengths[1])) && !isNaN(lengths[2])) return true
-        return false
-    }
-
-    function roundToDecimal(x: number, n: number) {
-        let k = 10 ** n
-        return Math.round(x * k) / k
-    }
-
-    function writeToHidden(angles: number[], lengths: number[]) {
-        (document.getElementById("angA") as HTMLInputElement).value = angles[0].toString();
-        (document.getElementById("angB") as HTMLInputElement).value = angles[1].toString();
-        (document.getElementById("angC") as HTMLInputElement).value = angles[2].toString();
-        (document.getElementById("lena") as HTMLInputElement).value = lengths[0].toString();
-        (document.getElementById("lenb") as HTMLInputElement).value = lengths[1].toString();
-        (document.getElementById("lenc") as HTMLInputElement).value = lengths[2].toString();
-
+    function writePlaceholders(triangle: Triangle) {
         const angle_inputs = document.querySelectorAll(".inputs.angles") as NodeListOf<HTMLInputElement>
-        setPlaceholders(angle_inputs, angles)
+        setPlaceholders(angle_inputs, triangle.angles)
         const length_inputs = document.querySelectorAll(".inputs.lengths") as NodeListOf<HTMLInputElement>
-        setPlaceholders(length_inputs, lengths)
+        setPlaceholders(length_inputs, triangle.lengths)
     }
 
     function setPlaceholders(inputs: NodeListOf<HTMLInputElement>, values: number[]) {
@@ -162,27 +70,6 @@ window.onload = () => {
                 inputs[i].placeholder = values[i].toString();
             else
                 inputs[i].placeholder = ""
-        }
-    }
-
-    function tryDrawTriangle() {
-        const angles = [
-            parseFloat((document.getElementById("angA") as HTMLInputElement).value),
-            parseFloat((document.getElementById("angB") as HTMLInputElement).value),
-            parseFloat((document.getElementById("angC") as HTMLInputElement).value)
-        ]
-        const lengths = [
-            parseFloat((document.getElementById("lena") as HTMLInputElement).value),
-            parseFloat((document.getElementById("lenb") as HTMLInputElement).value),
-            parseFloat((document.getElementById("lenc") as HTMLInputElement).value)
-        ]
-        const rotation = parseFloat((document.getElementById("rotation") as HTMLInputElement).value)
-        if (haveEnoughInfomation(angles, lengths)) {
-            const dpi = parseFloat((document.getElementById("dpi") as HTMLInputElement).value)
-            let points = convertTriangleToPoints(angles, lengths, dpiToLengthFactor(dpi))
-            points = rotatePoints(points, rotation)
-            points = shiftPoints(points)
-            drawTriangle(points)
         }
     }
 
@@ -270,11 +157,11 @@ window.onload = () => {
         const labelPoints = getAngleLabelPoints(points, 20)
         if ((document.getElementById("angleLables") as HTMLInputElement).checked) {
             ctx.textAlign = "center"
-        ctx.textBaseline = "middle"
-        ctx.font = "20px Arial"
-        ctx.fillText((document.getElementById("labelA") as HTMLInputElement).value, labelPoints[0][0], labelPoints[0][1])
-        ctx.fillText((document.getElementById("labelB") as HTMLInputElement).value, labelPoints[1][0], labelPoints[1][1])
-        ctx.fillText((document.getElementById("labelC") as HTMLInputElement).value, labelPoints[2][0], labelPoints[2][1])
+            ctx.textBaseline = "middle"
+            ctx.font = "20px Arial"
+            ctx.fillText((document.getElementById("labelA") as HTMLInputElement).value, labelPoints[0][0], labelPoints[0][1])
+            ctx.fillText((document.getElementById("labelB") as HTMLInputElement).value, labelPoints[1][0], labelPoints[1][1])
+            ctx.fillText((document.getElementById("labelC") as HTMLInputElement).value, labelPoints[2][0], labelPoints[2][1])
         }
     }
 
@@ -288,4 +175,108 @@ window.onload = () => {
         canvas.width = maxX + margin * 2
         canvas.height = maxY + margin * 2
     }
+}
+
+class Triangle {
+    angles: number[]
+    lengths: number[]
+
+    constructor(angles: number[], lengths: number[]) {
+        this.angles = angles
+        this.lengths = lengths
+
+        for (let i = 0; i < 2; i++) {
+            let valid_angles = this.angles.filter(x => !isNaN(x))
+            let valid_lengths = this.lengths.filter(x => !isNaN(x))
+            if (valid_angles.length == 2) this.applySumOfInteriorAngleRule(valid_angles)
+            if (valid_angles.length == 0 && valid_lengths.length == 3) this.applyCosineRuleWithLengths()
+            if ((valid_angles.length + valid_lengths.length == 3) && this.haveNoPairs()) this.applyCosineRuleWithAngle()
+            this.applySineRule()
+        }
+    }
+
+    applySumOfInteriorAngleRule(valid_angles: number[]) {
+        const sum = valid_angles.reduce((x, y) => x + y)
+        for (let i = 0; i < 3; i++) {
+            if (isNaN(this.angles[i])) {
+                this.angles[i] = 180 - sum
+            }
+        }
+    }
+
+    applySineRule() {
+        let have_pair = false
+        for (let i = 0; i < 3; i++) {
+            if (!isNaN(this.angles[i]) && !isNaN(this.lengths[i])) {
+                var k = this.lengths[i] / Math.sin(this.angles[i] * Math.PI / 180)
+                have_pair = true
+                break
+            }
+        }
+
+        if (!have_pair) return
+
+        for (let i = 0; i < 3; i++) {
+            if (!isNaN(this.angles[i]) && isNaN(this.lengths[i])) {
+                let length = k * Math.sin(this.angles[i] * Math.PI / 180)
+                this.lengths[i] = roundToDecimal(length, 5)
+            }
+            else if (isNaN(this.angles[i]) && !isNaN(this.lengths[i])) {
+                let ratio = this.lengths[i] / k
+                let inversed = false
+                if (ratio > 1) {
+                    ratio = 1 / ratio
+                    inversed = true
+                }
+                let angle = Math.asin(ratio) * 180 / Math.PI
+                if (inversed) angle = 1 / angle
+                this.angles[i] = roundToDecimal(angle, 5)
+            }
+        }
+    }
+
+    applyCosineRuleWithLengths() {
+        let idx = [0, 1, 2]
+        for (let i = 0; i < 2; i++) {
+            let a = this.lengths[idx[0]]
+            let b = this.lengths[idx[1]]
+            let c = this.lengths[idx[2]]
+
+            let cosC = (a ** 2 + b ** 2 - c ** 2) / (2 * a * b)
+            let angC = Math.acos(cosC) * 180 / Math.PI
+            this.angles[idx[2]] = roundToDecimal(angC, 5)
+            idx.push(idx.shift())
+        }
+    }
+
+    applyCosineRuleWithAngle() {
+        let idx = []
+        for (let i = 0; i < 3; i++) {
+            if (isNaN(this.angles[i]) && !isNaN(this.lengths[i])) idx.unshift(i)
+            else if (!isNaN(this.angles[i]) && isNaN(this.lengths[i])) idx.push(i)
+        }
+        let a = this.lengths[idx[0]]
+        let b = this.lengths[idx[1]]
+        let angC = this.angles[idx[2]]
+
+        let c = Math.sqrt(a ** 2 + b ** 2 - 2 * a * b * Math.cos(angC * Math.PI / 180))
+        this.lengths[idx[2]] = roundToDecimal(c, 5)
+    }
+
+    haveNoPairs() {
+        for (let i = 0; i < 3; i++) {
+            if (!isNaN(this.angles[i]) && !isNaN(this.lengths[i])) return false
+        }
+        return true
+    }
+
+    haveEnoughInfomation() {
+        if ((!isNaN(this.angles[0]) && !isNaN(this.lengths[1])) && !isNaN(this.lengths[2])) return true
+        return false
+    }
+}
+
+function roundToDecimal(x: number, n: number) {
+    let k = 10 ** n
+    return Math.round(x * k) / k
 }

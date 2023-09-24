@@ -8,7 +8,7 @@ window.onload = function () {
     document.getElementById("rotationText").addEventListener("change", rotationTextChanged);
     document.querySelectorAll(".triggerRedraw").forEach(function (ele) {
         ele.addEventListener("change", function (event) {
-            tryDrawTriangle();
+            processInputs();
         });
     });
     function processInputs() {
@@ -22,19 +22,16 @@ window.onload = function () {
             parseFloat(document.getElementById("inb").value),
             parseFloat(document.getElementById("inc").value),
         ];
-        for (var i = 0; i < 2; i++) {
-            var valid_angles = angles.filter(function (x) { return !isNaN(x); });
-            var valid_lengths = lengths.filter(function (x) { return !isNaN(x); });
-            if (valid_angles.length == 2)
-                applySumOfInteriorAngleRule(angles, valid_angles);
-            if (valid_angles.length == 0 && valid_lengths.length == 3)
-                applyCosineRuleWithLengths(angles, lengths);
-            if ((valid_angles.length + valid_lengths.length == 3) && haveNoPairs(angles, lengths))
-                applyCosineRuleWithAngle(angles, lengths);
-            applySineRule(angles, lengths);
+        var triangle = new Triangle(angles, lengths);
+        var rotation = parseFloat(document.getElementById("rotation").value);
+        if (triangle.haveEnoughInfomation()) {
+            writePlaceholders(triangle);
+            var dpi = parseFloat(document.getElementById("dpi").value);
+            var points = convertTriangleToPoints(triangle.angles, triangle.lengths, dpiToLengthFactor(dpi));
+            points = rotatePoints(points, rotation);
+            points = shiftPoints(points);
+            drawTriangle(points);
         }
-        writeToHidden(angles, lengths);
-        tryDrawTriangle();
     }
     function rotationSliderChanged(e) {
         var rotation = e.target.value;
@@ -42,7 +39,7 @@ window.onload = function () {
         rotationTextEle.value = rotation;
         var rotationEle = document.getElementById("rotation");
         rotationEle.value = rotation;
-        tryDrawTriangle();
+        processInputs();
     }
     function rotationTextChanged(e) {
         var rotation = e.target.value;
@@ -50,99 +47,13 @@ window.onload = function () {
         rotationSliderEle.value = rotation;
         var rotationEle = document.getElementById("rotation");
         rotationEle.value = rotation;
-        tryDrawTriangle();
+        processInputs();
     }
-    function applySumOfInteriorAngleRule(angles, valid_angles) {
-        var sum = valid_angles.reduce(function (x, y) { return x + y; });
-        for (var i = 0; i < 3; i++) {
-            if (isNaN(angles[i])) {
-                angles[i] = 180 - sum;
-            }
-        }
-    }
-    function applySineRule(angles, lengths) {
-        var have_pair = false;
-        for (var i = 0; i < 3; i++) {
-            if (!isNaN(angles[i]) && !isNaN(lengths[i])) {
-                var k = lengths[i] / Math.sin(angles[i] * Math.PI / 180);
-                have_pair = true;
-                break;
-            }
-        }
-        if (!have_pair)
-            return;
-        for (var i = 0; i < 3; i++) {
-            if (!isNaN(angles[i]) && isNaN(lengths[i])) {
-                var length_1 = k * Math.sin(angles[i] * Math.PI / 180);
-                lengths[i] = roundToDecimal(length_1, 5);
-            }
-            else if (isNaN(angles[i]) && !isNaN(lengths[i])) {
-                var ratio = lengths[i] / k;
-                var inversed = false;
-                if (ratio > 1) {
-                    ratio = 1 / ratio;
-                    inversed = true;
-                }
-                var angle = Math.asin(ratio) * 180 / Math.PI;
-                if (inversed)
-                    angle = 1 / angle;
-                angles[i] = roundToDecimal(angle, 5);
-            }
-        }
-    }
-    function applyCosineRuleWithLengths(angles, lengths) {
-        var idx = [0, 1, 2];
-        for (var i = 0; i < 2; i++) {
-            var a = lengths[idx[0]];
-            var b = lengths[idx[1]];
-            var c = lengths[idx[2]];
-            var cosC = (Math.pow(a, 2) + Math.pow(b, 2) - Math.pow(c, 2)) / (2 * a * b);
-            var angC = Math.acos(cosC) * 180 / Math.PI;
-            angles[idx[2]] = roundToDecimal(angC, 5);
-            idx.push(idx.shift());
-        }
-    }
-    function applyCosineRuleWithAngle(angles, lengths) {
-        var idx = [];
-        for (var i = 0; i < 3; i++) {
-            if (isNaN(angles[i]) && !isNaN(lengths[i]))
-                idx.unshift(i);
-            else if (!isNaN(angles[i]) && isNaN(lengths[i]))
-                idx.push(i);
-        }
-        var a = lengths[idx[0]];
-        var b = lengths[idx[1]];
-        var angC = angles[idx[2]];
-        var c = Math.sqrt(Math.pow(a, 2) + Math.pow(b, 2) - 2 * a * b * Math.cos(angC * Math.PI / 180));
-        lengths[idx[2]] = roundToDecimal(c, 5);
-    }
-    function haveNoPairs(angles, lengths) {
-        for (var i = 0; i < 3; i++) {
-            if (!isNaN(angles[i]) && !isNaN(lengths[i]))
-                return false;
-        }
-        return true;
-    }
-    function haveEnoughInfomation(angles, lengths) {
-        if ((!isNaN(angles[0]) && !isNaN(lengths[1])) && !isNaN(lengths[2]))
-            return true;
-        return false;
-    }
-    function roundToDecimal(x, n) {
-        var k = Math.pow(10, n);
-        return Math.round(x * k) / k;
-    }
-    function writeToHidden(angles, lengths) {
-        document.getElementById("angA").value = angles[0].toString();
-        document.getElementById("angB").value = angles[1].toString();
-        document.getElementById("angC").value = angles[2].toString();
-        document.getElementById("lena").value = lengths[0].toString();
-        document.getElementById("lenb").value = lengths[1].toString();
-        document.getElementById("lenc").value = lengths[2].toString();
+    function writePlaceholders(triangle) {
         var angle_inputs = document.querySelectorAll(".inputs.angles");
-        setPlaceholders(angle_inputs, angles);
+        setPlaceholders(angle_inputs, triangle.angles);
         var length_inputs = document.querySelectorAll(".inputs.lengths");
-        setPlaceholders(length_inputs, lengths);
+        setPlaceholders(length_inputs, triangle.lengths);
     }
     function setPlaceholders(inputs, values) {
         for (var i = 0; i < 3; i++) {
@@ -150,26 +61,6 @@ window.onload = function () {
                 inputs[i].placeholder = values[i].toString();
             else
                 inputs[i].placeholder = "";
-        }
-    }
-    function tryDrawTriangle() {
-        var angles = [
-            parseFloat(document.getElementById("angA").value),
-            parseFloat(document.getElementById("angB").value),
-            parseFloat(document.getElementById("angC").value)
-        ];
-        var lengths = [
-            parseFloat(document.getElementById("lena").value),
-            parseFloat(document.getElementById("lenb").value),
-            parseFloat(document.getElementById("lenc").value)
-        ];
-        var rotation = parseFloat(document.getElementById("rotation").value);
-        if (haveEnoughInfomation(angles, lengths)) {
-            var dpi = parseFloat(document.getElementById("dpi").value);
-            var points = convertTriangleToPoints(angles, lengths, dpiToLengthFactor(dpi));
-            points = rotatePoints(points, rotation);
-            points = shiftPoints(points);
-            drawTriangle(points);
         }
     }
     function dpiToLengthFactor(dpi) {
@@ -266,4 +157,102 @@ window.onload = function () {
         canvas.height = maxY + margin * 2;
     }
 };
+var Triangle = (function () {
+    function Triangle(angles, lengths) {
+        this.angles = angles;
+        this.lengths = lengths;
+        for (var i = 0; i < 2; i++) {
+            var valid_angles = this.angles.filter(function (x) { return !isNaN(x); });
+            var valid_lengths = this.lengths.filter(function (x) { return !isNaN(x); });
+            if (valid_angles.length == 2)
+                this.applySumOfInteriorAngleRule(valid_angles);
+            if (valid_angles.length == 0 && valid_lengths.length == 3)
+                this.applyCosineRuleWithLengths();
+            if ((valid_angles.length + valid_lengths.length == 3) && this.haveNoPairs())
+                this.applyCosineRuleWithAngle();
+            this.applySineRule();
+        }
+    }
+    Triangle.prototype.applySumOfInteriorAngleRule = function (valid_angles) {
+        var sum = valid_angles.reduce(function (x, y) { return x + y; });
+        for (var i = 0; i < 3; i++) {
+            if (isNaN(this.angles[i])) {
+                this.angles[i] = 180 - sum;
+            }
+        }
+    };
+    Triangle.prototype.applySineRule = function () {
+        var have_pair = false;
+        for (var i = 0; i < 3; i++) {
+            if (!isNaN(this.angles[i]) && !isNaN(this.lengths[i])) {
+                var k = this.lengths[i] / Math.sin(this.angles[i] * Math.PI / 180);
+                have_pair = true;
+                break;
+            }
+        }
+        if (!have_pair)
+            return;
+        for (var i = 0; i < 3; i++) {
+            if (!isNaN(this.angles[i]) && isNaN(this.lengths[i])) {
+                var length_1 = k * Math.sin(this.angles[i] * Math.PI / 180);
+                this.lengths[i] = roundToDecimal(length_1, 5);
+            }
+            else if (isNaN(this.angles[i]) && !isNaN(this.lengths[i])) {
+                var ratio = this.lengths[i] / k;
+                var inversed = false;
+                if (ratio > 1) {
+                    ratio = 1 / ratio;
+                    inversed = true;
+                }
+                var angle = Math.asin(ratio) * 180 / Math.PI;
+                if (inversed)
+                    angle = 1 / angle;
+                this.angles[i] = roundToDecimal(angle, 5);
+            }
+        }
+    };
+    Triangle.prototype.applyCosineRuleWithLengths = function () {
+        var idx = [0, 1, 2];
+        for (var i = 0; i < 2; i++) {
+            var a = this.lengths[idx[0]];
+            var b = this.lengths[idx[1]];
+            var c = this.lengths[idx[2]];
+            var cosC = (Math.pow(a, 2) + Math.pow(b, 2) - Math.pow(c, 2)) / (2 * a * b);
+            var angC = Math.acos(cosC) * 180 / Math.PI;
+            this.angles[idx[2]] = roundToDecimal(angC, 5);
+            idx.push(idx.shift());
+        }
+    };
+    Triangle.prototype.applyCosineRuleWithAngle = function () {
+        var idx = [];
+        for (var i = 0; i < 3; i++) {
+            if (isNaN(this.angles[i]) && !isNaN(this.lengths[i]))
+                idx.unshift(i);
+            else if (!isNaN(this.angles[i]) && isNaN(this.lengths[i]))
+                idx.push(i);
+        }
+        var a = this.lengths[idx[0]];
+        var b = this.lengths[idx[1]];
+        var angC = this.angles[idx[2]];
+        var c = Math.sqrt(Math.pow(a, 2) + Math.pow(b, 2) - 2 * a * b * Math.cos(angC * Math.PI / 180));
+        this.lengths[idx[2]] = roundToDecimal(c, 5);
+    };
+    Triangle.prototype.haveNoPairs = function () {
+        for (var i = 0; i < 3; i++) {
+            if (!isNaN(this.angles[i]) && !isNaN(this.lengths[i]))
+                return false;
+        }
+        return true;
+    };
+    Triangle.prototype.haveEnoughInfomation = function () {
+        if ((!isNaN(this.angles[0]) && !isNaN(this.lengths[1])) && !isNaN(this.lengths[2]))
+            return true;
+        return false;
+    };
+    return Triangle;
+}());
+function roundToDecimal(x, n) {
+    var k = Math.pow(10, n);
+    return Math.round(x * k) / k;
+}
 //# sourceMappingURL=index.js.map

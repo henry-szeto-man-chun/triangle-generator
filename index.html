@@ -28,14 +28,14 @@
         </thead>
         <tbody>
             <tr>
-                <td>&alpha;: <input class="inputs angles" id="inA" type="text"></td>
-                <td>&beta;: <input class="inputs angles" id="inB" type="text"></td>
-                <td>&gamma;: <input class="inputs angles" id="inC" type="text"></td>
+                <td>&alpha;: <input class="inputs angles" id="inA" type="number"></td>
+                <td>&beta;: <input class="inputs angles" id="inB" type="number"></td>
+                <td>&gamma;: <input class="inputs angles" id="inC" type="number"></td>
             </tr>
             <tr>
-                <td>a: <input class="inputs lengths" id="ina" type="text"></td>
-                <td>b: <input class="inputs lengths" id="inb" type="text"></td>
-                <td>c: <input class="inputs lengths" id="inc" type="text"></td>
+                <td>a: <input class="inputs lengths" id="ina" type="number"></td>
+                <td>b: <input class="inputs lengths" id="inb" type="number"></td>
+                <td>c: <input class="inputs lengths" id="inc" type="number"></td>
             </tr>
         </tbody>
     </table>
@@ -53,13 +53,7 @@
             <td>C: <input class="triggerRedraw labelInputs" type="text" id="labelC" value="C"></td>
         </tr>
     </table>
-    <input id="angA" type="hidden">
-    <input id="angB" type="hidden">
-    <input id="angC" type="hidden">
-    <input id="lena" type="hidden">
-    <input id="lenb" type="hidden">
-    <input id="lenc" type="hidden">
-    <input id="rotation" type="hidden">
+    <input id="rotation" value="0" type="hidden">
     <p id="debug"></p>
     <canvas id="myCanvas" width="400" height="400"></canvas>
     
