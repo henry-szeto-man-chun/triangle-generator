@@ -7,29 +7,33 @@ class Triangle {
         this.lengths = lengths.slice()
 
         for (let i = 0; i < 2; i++) {
-            let valid_angles = this.angles.filter(x => isValid(x))
-            let valid_lengths = this.lengths.filter(x => isValid(x))
-            if (valid_angles.length === 2) this.applySumOfInteriorAngleRule(valid_angles)
+            let valid_angles = this.angles.filter(x => isNumber(x))
+            let valid_lengths = this.lengths.filter(x => isNumber(x))
+            this.applySumOfInteriorAnglesRule(valid_angles)
             if (valid_angles.length === 0 && valid_lengths.length === 3) this.applyCosineRuleWithLengths()
             if ((valid_angles.length + valid_lengths.length === 3) && this.haveNoPairs()) this.applyCosineRuleWithAngle()
             this.applySineRule()
         }
     }
 
-    applySumOfInteriorAngleRule(valid_angles: number[]) {
+    applySumOfInteriorAnglesRule(valid_angles: number[]) {
         const sum = valid_angles.reduce((x, y) => x + y)
-        for (let i = 0; i < 3; i++) {
-            if (!isValid(this.angles[i])) {
-                this.angles[i] = 180 - sum
+        if (valid_angles.length === 3 && sum > 180) throw new TriangleDataError("Sum of interior angles cannot be greater than 180.")
+        else if (valid_angles.length === 2) {
+            for (let i = 0; i < 3; i++) {
+                if (!isNumber(this.angles[i])) {
+                    this.angles[i] = 180 - sum
+                }
             }
         }
+
     }
 
     applySineRule() {
         let have_pair = false
         let k = 0
         for (let i = 0; i < 3; i++) {
-            if (isValid(this.angles[i]) && isValid(this.lengths[i])) {
+            if (isNumber(this.angles[i]) && isNumber(this.lengths[i])) {
                 k = this.lengths[i] / Math.sin(this.angles[i] * Math.PI / 180)
                 have_pair = true
                 break
@@ -39,11 +43,11 @@ class Triangle {
         if (!have_pair) return
 
         for (let i = 0; i < 3; i++) {
-            if (isValid(this.angles[i]) && !isValid(this.lengths[i])) {
+            if (isNumber(this.angles[i]) && !isNumber(this.lengths[i])) {
                 let length = k * Math.sin(this.angles[i] * Math.PI / 180)
                 this.lengths[i] = roundToDecimal(length, 5)
             }
-            else if (!isValid(this.angles[i]) && isValid(this.lengths[i])) {
+            else if (!isNumber(this.angles[i]) && isNumber(this.lengths[i])) {
                 let ratio = this.lengths[i] / k
                 let inversed = false
                 if (ratio > 1) {
@@ -74,8 +78,8 @@ class Triangle {
     applyCosineRuleWithAngle() {
         let idx = []
         for (let i = 0; i < 3; i++) {
-            if (!isValid(this.angles[i]) && isValid(this.lengths[i])) idx.unshift(i)
-            else if (isValid(this.angles[i]) && isValid(this.lengths[i])) idx.push(i)
+            if (!isNumber(this.angles[i]) && isNumber(this.lengths[i])) idx.unshift(i)
+            else if (isNumber(this.angles[i]) && isNumber(this.lengths[i])) idx.push(i)
         }
         let a = this.lengths[idx[0]]
         let b = this.lengths[idx[1]]
@@ -87,15 +91,23 @@ class Triangle {
 
     haveNoPairs() {
         for (let i = 0; i < 3; i++) {
-            if (isValid(this.angles[i]) && isValid(this.lengths[i])) return false
+            if (isNumber(this.angles[i]) && isNumber(this.lengths[i])) return false
         }
         return true
     }
 
-    haveEnoughInfomation() {
-        if (this.angles.filter(x => isValid(x)).length < 3) return false
-        if (this.lengths.filter(x => isValid(x)).length < 3) return false
+    isValid() {
+        if (this.angles.filter(x => isNumber(x)).length < 3) return false
+        if (this.lengths.filter(x => isNumber(x)).length < 3) return false
         return true
+    }
+}
+
+class TriangleDataError extends Error {
+    constructor(message?: string) {
+        super(message)
+        this.name = "TriangleDataError"
+        Object.setPrototypeOf(this, TriangleDataError.prototype)
     }
 }
 
@@ -104,7 +116,7 @@ function roundToDecimal(x: number, n: number) {
     return Math.round(x * k) / k
 }
 
-function isValid(x: number) {
+function isNumber(x: number) {
     return x !== null && !isNaN(x)
 }
 

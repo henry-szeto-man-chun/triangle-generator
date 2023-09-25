@@ -56,7 +56,7 @@ function App() {
   }
 
   function redrawTriangle() {
-    if (triangle === null || !triangle.haveEnoughInfomation()) return
+    if (triangle === null || !triangle.isValid()) return
 
     const drawer = new CanvasDrawer()
     drawer.drawTriangle(triangle, rotation, dpi, [labelA, labelB, labelC])

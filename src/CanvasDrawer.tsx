@@ -32,34 +32,6 @@ class CanvasDrawer {
         return new TrianglePoints([pointA, pointB, pointC])
     }
 
-    rotatePoints(points: number[][], rotation: number) {
-        let rad = rotation * Math.PI / 180
-        for (let i = 0; i < 3; i++) {
-            let x = points[i][0]
-            let y = points[i][1]
-            points[i][0] = x * Math.cos(rad) - y * Math.sin(rad)
-            points[i][1] = x * Math.sin(rad) + y * Math.cos(rad)
-        }
-
-        return points
-    }
-
-    shiftPoints(points: number[][]) {
-        let minX = 0
-        let minY = 0
-        points.forEach(point => {
-            if (point[0] < minX) minX = point[0]
-            if (point[1] < minY) minY = point[1]
-        })
-
-        for (let i = 0; i < 3; i++) {
-            points[i][0] -= minX
-            points[i][1] -= minY
-        }
-
-        return points
-    }
-
     drawPoints(points: TrianglePoints) {
         const margin = 50
         this.resizeCanvas(this.canvas, points, margin)
@@ -91,12 +63,12 @@ class CanvasDrawer {
     }
 
     getAngleLabelPoints(points: TrianglePoints, fontPx: number) {
-        let center = points.getCenterPoint()
+        let center = points.getIncenterPoint()
         let labelPoints: number[][] = [];
         points.points.forEach(point => {
             let distance = Math.sqrt((point[0] - center[0]) ** 2 + (point[1] - center[1]) ** 2)
             let bearing = Math.atan2(point[0] - center[0], point[1] - center[1])
-            let labelDistance = distance + (fontPx * 1.1)
+            let labelDistance = distance + (fontPx * 1.0)
             let pointX = center[0] + Math.sin(bearing) * labelDistance
             let pointY = center[1] + Math.cos(bearing) * labelDistance
             labelPoints.push([pointX, pointY])
@@ -104,16 +76,6 @@ class CanvasDrawer {
         return labelPoints
     }
 
-    getCenterPoint(points: number[][]) {
-        let center = [0, 0]
-        points.forEach(point => {
-            center[0] += point[0]
-            center[1] += point[1]
-        })
-        center[0] = center[0] / 3
-        center[1] = center[1] / 3
-        return center
-    }
 }
 
 class TrianglePoints {
@@ -147,15 +109,44 @@ class TrianglePoints {
         return new TrianglePoints(new_points)
     }
 
-    getCenterPoint() {
-        let center = [0, 0]
+    getMiddlePoint() {
+        let result = [0, 0]
         this.points.forEach(point => {
-            center[0] += point[0]
-            center[1] += point[1]
+            result[0] += point[0]
+            result[1] += point[1]
         })
-        center[0] = center[0] / 3
-        center[1] = center[1] / 3
-        return center
+        result[0] /= 3
+        result[1] /= 3
+        return result
+    }
+
+    getIncenterPoint() {
+        const result = [0, 0]
+        const lengths = this.getLengths()
+        const sum_of_lengths = lengths.reduce((x, y) => x + y)
+        for(let i=0; i<3; i++) {
+            result[0] += lengths[i] * this.points[i][0]
+            result[1] += lengths[i] * this.points[i][1]
+        }
+        result[0] /= sum_of_lengths
+        result[1] /= sum_of_lengths
+        return result
+    }
+
+    private getLengths() {
+        let result = []
+        for(let i=0; i<3; i++) {
+            let others = [0, 1, 2].filter(x => x !== i)
+            result[i] = this.getLength(this.points[others[0]], this.points[others[1]])
+        }
+        return result
+    }
+
+    private getLength(pointA: number[], pointB: number[]) {
+        let result = Math.sqrt(
+            Math.pow(pointA[0] - pointB[0], 2) + Math.pow(pointA[1] - pointB[1], 2)
+        )
+        return result
     }
 
     getMinXY() {
