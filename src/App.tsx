@@ -20,8 +20,8 @@ function TextInput({prompt, getter, setter}: {prompt: string, getter: string, se
 
 function App() {
   const [dpi, setDpi] = useState(300)
-  const [angles, setAngles] = useState(Array(3).fill(null))
-  const [lengths, setLengths] = useState(Array(3).fill(null))
+  const [angles, setAngles] = useState(Array(3).fill(NaN))
+  const [lengths, setLengths] = useState(Array(3).fill(NaN))
   const [rotation, setRotation] = useState(0)
   const [triangle, setTriangle] = useState<Triangle | null>(null)
   const [labelA, setLabelA] = useState('A')
@@ -101,7 +101,7 @@ function App() {
                 id='angleA'
                 className='inputs angles'
                 type='number'
-                value={angles[0]}
+                value={isNaN(angles[0]) ? '' : angles[0]}
                 min='0.1'
                 max='179.98'
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleAnglesChange(e.currentTarget.value, 0)}
@@ -110,7 +110,7 @@ function App() {
               <input
                 className='inputs angles'
                 type='number'
-                value={angles[1]}
+                value={isNaN(angles[1]) ? '' : angles[1]}
                 min='0.1'
                 max='179.8'
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleAnglesChange(e.currentTarget.value, 1)}
@@ -119,7 +119,7 @@ function App() {
               <input
                 className='inputs angles'
                 type='number'
-                value={angles[2]}
+                value={isNaN(angles[2]) ? '' : angles[2]}
                 min='0.1'
                 max='179.8'
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleAnglesChange(e.currentTarget.value, 2)}
@@ -133,7 +133,7 @@ function App() {
               <input
                 className='inputs lengths'
                 type='number'
-                value={lengths[0]}
+                value={isNaN(lengths[0]) ? '': lengths[0]}
                 min='0.01'
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleLengthsChange(e.currentTarget.value, 0)}
               /></td>
@@ -141,7 +141,7 @@ function App() {
               <input
                 className='inputs lengths'
                 type='number'
-                value={lengths[1]}
+                value={isNaN(lengths[1]) ? '': lengths[1]}
                 min='0.01'
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleLengthsChange(e.currentTarget.value, 1)}
               /></td>
@@ -149,7 +149,7 @@ function App() {
               <input
                 className='inputs lengths'
                 type='number'
-                value={lengths[2]}
+                value={isNaN(lengths[2]) ? '': lengths[2]}
                 min='0.01'
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleLengthsChange(e.currentTarget.value, 2)}
               /></td>
