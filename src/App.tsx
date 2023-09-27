@@ -3,26 +3,13 @@ import Triangle from './Triangle';
 import CanvasDrawer from './CanvasDrawer';
 import './App.css';
 import { TriangleFactory } from './TriangleFactory';
-
-function TextInput({ prompt, getter, setter }: { prompt: string, getter: string, setter: React.Dispatch<React.SetStateAction<string>> }) {
-  return (
-    <>
-      <label htmlFor={React.useId()}>{prompt}</label>
-      <input
-        className='labelInputs'
-        type='text'
-        value={getter}
-        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setter(e.currentTarget.value)}
-        id={React.useId()}
-      />
-    </>
-  )
-}
+import TextInput from './components/TextInput';
+import { AngleInput, LengthInput } from './components/TriangleDataInput';
 
 function App() {
   const [dpi, setDpi] = useState(300)
-  const [angles, setAngles] = useState(Array(3).fill(NaN))
-  const [lengths, setLengths] = useState(Array(3).fill(NaN))
+  const [angles, setAngles] = useState(Array<number>(3).fill(NaN))
+  const [lengths, setLengths] = useState(Array<number>(3).fill(NaN))
   const [rotation, setRotation] = useState(0)
   const [triangle, setTriangle] = useState<Triangle | null>(null)
   const [labelA, setLabelA] = useState('A')
@@ -98,74 +85,39 @@ function App() {
       <h1>
         Triangle Generator
       </h1>
-      DPI: <input
-        className='triggerRedraw'
-        type='number'
-        value={dpi}
-        onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleDpiChange(e.currentTarget.value)} />
+      
+      <p>
+        Instructions: input angles and lengths of sides to generate an image, right click on image to save.
+      </p>
       <table>
         <tbody>
           <tr>
             <td colSpan={3}>Angles (degree):</td>
           </tr>
           <tr>
-            <td><label htmlFor='angleA'>&alpha;</label>:
-              <input
-                id='angleA'
-                className='inputs angles'
-                type='number'
-                value={isNaN(angles[0]) ? '' : angles[0]}
-                min='0.1'
-                max='179.98'
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleAnglesChange(e.currentTarget.value, 0)}
-              /></td>
-            <td>&beta;:
-              <input
-                className='inputs angles'
-                type='number'
-                value={isNaN(angles[1]) ? '' : angles[1]}
-                min='0.1'
-                max='179.8'
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleAnglesChange(e.currentTarget.value, 1)}
-              /></td>
-            <td>&gamma;:
-              <input
-                className='inputs angles'
-                type='number'
-                value={isNaN(angles[2]) ? '' : angles[2]}
-                min='0.1'
-                max='179.8'
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleAnglesChange(e.currentTarget.value, 2)}
-              /></td>
+            <td>
+              <AngleInput prompt='&alpha;: ' getter={angles} index={0} handler={handleAnglesChange} />
+            </td>
+            <td>
+              <AngleInput prompt='&beta;: ' getter={angles} index={1} handler={handleAnglesChange} />
+            </td>
+            <td>
+              <AngleInput prompt='&gamma;: ' getter={angles} index={2} handler={handleAnglesChange} />
+            </td>
           </tr>
           <tr>
             <td colSpan={3}>Lengths (cm):</td>
           </tr>
           <tr>
-            <td>a:
-              <input
-                className='inputs lengths'
-                type='number'
-                value={isNaN(lengths[0]) ? '' : lengths[0]}
-                min='0.01'
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleLengthsChange(e.currentTarget.value, 0)}
-              /></td>
-            <td>b:
-              <input
-                className='inputs lengths'
-                type='number'
-                value={isNaN(lengths[1]) ? '' : lengths[1]}
-                min='0.01'
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleLengthsChange(e.currentTarget.value, 1)}
-              /></td>
-            <td>c:
-              <input
-                className='inputs lengths'
-                type='number'
-                value={isNaN(lengths[2]) ? '' : lengths[2]}
-                min='0.01'
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleLengthsChange(e.currentTarget.value, 2)}
-              /></td>
+            <td>
+              <LengthInput prompt='a: ' getter={lengths} index={0} handler={handleLengthsChange} />
+            </td>
+            <td>
+              <LengthInput prompt='b: ' getter={lengths} index={1} handler={handleLengthsChange} />
+            </td>
+            <td>
+              <LengthInput prompt='c: ' getter={lengths} index={2} handler={handleLengthsChange} />
+            </td>
           </tr>
         </tbody>
       </table>
@@ -198,13 +150,21 @@ function App() {
             <td colSpan={3}>Labels:</td>
           </tr>
           <tr>
-            <td><TextInput prompt='A: ' getter={labelA} setter={setLabelA} /></td>
-            <td><TextInput prompt='B: ' getter={labelB} setter={setLabelB} /></td>
-            <td><TextInput prompt='C: ' getter={labelC} setter={setLabelC} /></td>
+            <td><TextInput prompt='&alpha;: ' getter={labelA} setter={setLabelA} /></td>
+            <td><TextInput prompt='&beta;: ' getter={labelB} setter={setLabelB} /></td>
+            <td><TextInput prompt='&gamma;: ' getter={labelC} setter={setLabelC} /></td>
           </tr>
         </tbody>
 
       </table>
+      <p>
+      <label htmlFor='dpiEle'>DPI: </label>
+      <input
+        id='dpiEle'
+        type='number'
+        value={dpi}
+        onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleDpiChange(e.currentTarget.value)} />
+      </p>
       <canvas id='myCanvas' width='400' height='400'></canvas>
     </div>
   );
