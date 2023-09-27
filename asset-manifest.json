@@ -1,0 +1,15 @@
+{
+  "files": {
+    "main.css": "/triangle-generator/static/css/main.7c885894.css",
+    "main.js": "/triangle-generator/static/js/main.d28c840b.js",
+    "static/js/787.c82e5fcc.chunk.js": "/triangle-generator/static/js/787.c82e5fcc.chunk.js",
+    "index.html": "/triangle-generator/index.html",
+    "main.7c885894.css.map": "/triangle-generator/static/css/main.7c885894.css.map",
+    "main.d28c840b.js.map": "/triangle-generator/static/js/main.d28c840b.js.map",
+    "787.c82e5fcc.chunk.js.map": "/triangle-generator/static/js/787.c82e5fcc.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.7c885894.css",
+    "static/js/main.d28c840b.js"
+  ]
+}
