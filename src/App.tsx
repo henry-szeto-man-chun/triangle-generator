@@ -2,8 +2,9 @@ import React, { useEffect, useState } from 'react';
 import Triangle from './Triangle';
 import CanvasDrawer from './CanvasDrawer';
 import './App.css';
+import { TriangleFactory } from './TriangleFactory';
 
-function TextInput({prompt, getter, setter}: {prompt: string, getter: string, setter: React.Dispatch<React.SetStateAction<string>>}) {
+function TextInput({ prompt, getter, setter }: { prompt: string, getter: string, setter: React.Dispatch<React.SetStateAction<string>> }) {
   return (
     <>
       <label htmlFor={React.useId()}>{prompt}</label>
@@ -34,21 +35,29 @@ function App() {
   })
 
   function handleDpiChange(value: string) {
-    setDpi(parseFloat(value))
+    setDpi(parseFloat(value));
   }
 
   function handleAnglesChange(value: string, index: number) {
-    angles[index] = parseFloat(value)
-    setAngles(angles)
+    angles[index] = parseFloat(value);
+    setAngles(angles);
 
-    setTriangle(new Triangle(angles, lengths))
+    createTriangle();
   }
 
-  function handleLengthsChange(value: string, index: number) {
-    lengths[index] = parseFloat(value)
-    setLengths(lengths)
 
-    setTriangle(new Triangle(angles, lengths))
+
+  function handleLengthsChange(value: string, index: number) {
+    lengths[index] = parseFloat(value);
+    setLengths(lengths);
+
+    createTriangle();
+  }
+
+  function createTriangle() {
+    const triangleFactory = new TriangleFactory();
+    const triangle = triangleFactory.createFromPartialAnglesAndLengths(angles, lengths);
+    setTriangle(triangle);
   }
 
   function handleRotationChange(value: string) {
@@ -56,7 +65,7 @@ function App() {
   }
 
   function redrawTriangle() {
-    if (triangle === null || !triangle.isValid()) return
+    if (triangle === null || !triangle.isComplete()) return
 
     const drawer = new CanvasDrawer()
     drawer.drawTriangle(triangle, rotation, dpi, [labelA, labelB, labelC])
@@ -73,10 +82,14 @@ function App() {
 
   function setPlaceholders(inputs: NodeListOf<HTMLInputElement>, values: number[]) {
     for (let i = 0; i < 3; i++) {
-      if (inputs[i].value.length == 0 && values[i] !== null && !isNaN(values[i]))
+      if (inputs[i].value.length == 0 && values[i] !== null && !isNaN(values[i])) {
         inputs[i].placeholder = values[i].toString();
-      else
-        inputs[i].placeholder = ''
+        inputs[i].disabled = true;
+      }
+      else {
+        inputs[i].placeholder = '';
+        inputs[i].disabled = false;
+      }
     }
   }
 
@@ -133,7 +146,7 @@ function App() {
               <input
                 className='inputs lengths'
                 type='number'
-                value={isNaN(lengths[0]) ? '': lengths[0]}
+                value={isNaN(lengths[0]) ? '' : lengths[0]}
                 min='0.01'
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleLengthsChange(e.currentTarget.value, 0)}
               /></td>
@@ -141,7 +154,7 @@ function App() {
               <input
                 className='inputs lengths'
                 type='number'
-                value={isNaN(lengths[1]) ? '': lengths[1]}
+                value={isNaN(lengths[1]) ? '' : lengths[1]}
                 min='0.01'
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleLengthsChange(e.currentTarget.value, 1)}
               /></td>
@@ -149,7 +162,7 @@ function App() {
               <input
                 className='inputs lengths'
                 type='number'
-                value={isNaN(lengths[2]) ? '': lengths[2]}
+                value={isNaN(lengths[2]) ? '' : lengths[2]}
                 min='0.01'
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleLengthsChange(e.currentTarget.value, 2)}
               /></td>

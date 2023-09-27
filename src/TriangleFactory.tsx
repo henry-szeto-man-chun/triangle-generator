@@ -8,13 +8,14 @@ class TriangleFactory {
         new SineRule()
     ];
 
-    createTriangleFromPartialAnglesAndLengths(angles: number[], lengths: number[]) {
-        let applicableRules = this.rules.filter(x => x.canApply(angles, lengths))
+    createFromPartialAnglesAndLengths(angles: number[], lengths: number[]) {
+        let applicableRules = this.rules.filter(x => x.isApplicable(angles, lengths))
         while (!this.isComplete(angles, lengths) && applicableRules.length > 0) {
-            [angles, lengths] = applicableRules[0].applyRule(angles, lengths)
-        }
+            [angles, lengths] = applicableRules[0].apply(angles, lengths);
+            applicableRules = this.rules.filter(x => x.isApplicable(angles, lengths));
+        } 
 
-        if (this.isComplete(angles, lengths)) return new Triangle(angles, lengths)
+        return new Triangle(angles, lengths)
     }
 
     private isComplete(angles: number[], lengths: number[]) {
@@ -26,20 +27,20 @@ class TriangleFactory {
 }
 
 interface TriangleRule {
-    canApply(angles: number[], lengths: number[]): boolean;
-    applyRule(angles: number[], lengths: number[]): number[][];
+    isApplicable(angles: number[], lengths: number[]): boolean;
+    apply(angles: number[], lengths: number[]): number[][];
 }
 
 class SumOfInteriorAnglesRule implements TriangleRule {
-    canApply(angles: number[], lengths: number[]): boolean {
+    isApplicable(angles: number[], lengths: number[]): boolean {
         const nonEmptyAngles = angles.filter(x => isNumber(x));
         if (nonEmptyAngles.length == 2) return true;
         else return false;
     }
-    applyRule(angles: number[], lengths: number[]): number[][] {
+    apply(angles: number[], lengths: number[]): number[][] {
         const newAngles = angles.slice()
-        const sum = angles.reduce((x, y) => x + y)
-        if (sum > 180) throw new TriangleDataError("Sum of interior angles cannot be greater than 180.");
+        const sum = angles.filter(x => isNumber(x)).reduce((x, y) => x + y)
+        if (sum >= 180) throw new TriangleDataError("Sum of interior angles cannot be greater than 180.");
 
         for (let i = 0; i < 3; i++) {
             if (!isNumber(angles[i])) {
@@ -53,21 +54,21 @@ class SumOfInteriorAnglesRule implements TriangleRule {
 }
 
 class CosineRuleOfSide implements TriangleRule {
-    canApply(angles: number[], lengths: number[]): boolean {
+    isApplicable(angles: number[], lengths: number[]): boolean {
         const nonEmptyLengths = lengths.filter(x => isNumber(x));
         if (nonEmptyLengths.length === 3) return true;
         else return false;
     }
-    applyRule(angles: number[], lengths: number[]): number[][] {
+    apply(angles: number[], lengths: number[]): number[][] {
         const newAngles = angles.slice()
         const indices = [0, 1, 2]
-        for (let i = 0; i < 2; i++) {
+        for (let i = 0; i < 3; i++) {
             const a = lengths[indices[0]]
             const b = lengths[indices[1]]
             const c = lengths[indices[2]]
 
             const cosC = (a ** 2 + b ** 2 - c ** 2) / (2 * a * b)
-            if (!isNaN(cosC)) {
+            if (!isNaN(cosC) && !isNumber(newAngles[indices[2]])) {
                 newAngles[indices[2]] = Math.acos(cosC) * 180 / Math.PI
             }
             indices.push(indices.shift() as number)
@@ -78,7 +79,7 @@ class CosineRuleOfSide implements TriangleRule {
 }
 
 class CosineRuleOfAngle implements TriangleRule {
-    canApply(angles: number[], lengths: number[]): boolean {
+    isApplicable(angles: number[], lengths: number[]): boolean {
         const nonEmptyAngles = angles.filter(x => isNumber(x));
         const nonEmptyLengths = lengths.filter(x => isNumber(x));
         if (
@@ -88,7 +89,7 @@ class CosineRuleOfAngle implements TriangleRule {
         ) return true;
         else return false;
     }
-    applyRule(angles: number[], lengths: number[]): number[][] {
+    apply(angles: number[], lengths: number[]): number[][] {
         const newLengths = lengths.slice()
         const indices = []
         for (let i = 0; i < 3; i++) {
@@ -111,16 +112,17 @@ class CosineRuleOfAngle implements TriangleRule {
 }
 
 class SineRule implements TriangleRule {
-    canApply(angles: number[], lengths: number[]): boolean {
+    isApplicable(angles: number[], lengths: number[]): boolean {
         const nonEmptyAngles = angles.filter(x => isNumber(x));
         const nonEmptyLengths = lengths.filter(x => isNumber(x));
         if (
-            nonEmptyAngles.length + nonEmptyLengths.length >= 3 &&
-            this.findPair(angles, lengths)
+            (nonEmptyAngles.length + nonEmptyLengths.length) >= 3 &&
+            (nonEmptyAngles.length + nonEmptyLengths.length) <= 6 &&
+            this.findPair(angles, lengths) != -1
         ) return true;
         else return false;
     }
-    applyRule(angles: number[], lengths: number[]): number[][] {
+    apply(angles: number[], lengths: number[]): number[][] {
         const newAngles = angles.slice()
         const newLengths = lengths.slice()
         const index = this.findPair(angles, lengths)
@@ -168,5 +170,6 @@ export {
     SumOfInteriorAnglesRule,
     CosineRuleOfAngle,
     CosineRuleOfSide,
-    SineRule
+    SineRule,
+    TriangleDataError
 }
