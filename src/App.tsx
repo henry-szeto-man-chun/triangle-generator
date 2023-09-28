@@ -12,12 +12,11 @@ function App() {
   const [lengths, setLengths] = useState(Array<number>(3).fill(NaN))
   const [rotation, setRotation] = useState(0)
   const [triangle, setTriangle] = useState<Triangle | null>(null)
-  const [labelA, setLabelA] = useState('A')
-  const [labelB, setLabelB] = useState('B')
-  const [labelC, setLabelC] = useState('C')
+  const [labelA, setLabelA] = useState('α')
+  const [labelB, setLabelB] = useState('β')
+  const [labelC, setLabelC] = useState('γ')
 
   useEffect(() => {
-    writePlaceholders();
     redrawTriangle();
   })
 
@@ -58,28 +57,6 @@ function App() {
     drawer.drawTriangle(triangle, rotation, dpi, [labelA, labelB, labelC])
   }
 
-  function writePlaceholders() {
-    if (triangle === null) return
-
-    const angle_inputs = document.querySelectorAll<HTMLInputElement>('.inputs.angles')
-    setPlaceholders(angle_inputs, triangle.angles)
-    const length_inputs = document.querySelectorAll<HTMLInputElement>('.inputs.lengths')
-    setPlaceholders(length_inputs, triangle.lengths)
-  }
-
-  function setPlaceholders(inputs: NodeListOf<HTMLInputElement>, values: number[]) {
-    for (let i = 0; i < 3; i++) {
-      if (inputs[i].value.length == 0 && values[i] !== null && !isNaN(values[i])) {
-        inputs[i].placeholder = values[i].toString();
-        inputs[i].disabled = true;
-      }
-      else {
-        inputs[i].placeholder = '';
-        inputs[i].disabled = false;
-      }
-    }
-  }
-
   return (
     <div className='App'>
       <h1>
@@ -96,13 +73,13 @@ function App() {
           </tr>
           <tr>
             <td>
-              <AngleInput prompt='&alpha;: ' getter={angles} index={0} handler={handleAnglesChange} />
+              <AngleInput prompt='&alpha;: ' getter={angles} index={0} handler={handleAnglesChange} inferredValue={triangle !== null ? triangle.angles[0] : NaN} />
             </td>
             <td>
-              <AngleInput prompt='&beta;: ' getter={angles} index={1} handler={handleAnglesChange} />
+              <AngleInput prompt='&beta;: ' getter={angles} index={1} handler={handleAnglesChange} inferredValue={triangle !== null ? triangle.angles[1] : NaN} />
             </td>
             <td>
-              <AngleInput prompt='&gamma;: ' getter={angles} index={2} handler={handleAnglesChange} />
+              <AngleInput prompt='&gamma;: ' getter={angles} index={2} handler={handleAnglesChange} inferredValue={triangle !== null ? triangle.angles[2] : NaN} />
             </td>
           </tr>
           <tr>
@@ -110,13 +87,13 @@ function App() {
           </tr>
           <tr>
             <td>
-              <LengthInput prompt='a: ' getter={lengths} index={0} handler={handleLengthsChange} />
+              <LengthInput prompt='a: ' getter={lengths} index={0} handler={handleLengthsChange} inferredValue={triangle !== null ? triangle.lengths[0] : NaN} />
             </td>
             <td>
-              <LengthInput prompt='b: ' getter={lengths} index={1} handler={handleLengthsChange} />
+              <LengthInput prompt='b: ' getter={lengths} index={1} handler={handleLengthsChange} inferredValue={triangle !== null ? triangle.lengths[1] : NaN}/>
             </td>
             <td>
-              <LengthInput prompt='c: ' getter={lengths} index={2} handler={handleLengthsChange} />
+              <LengthInput prompt='c: ' getter={lengths} index={2} handler={handleLengthsChange} inferredValue={triangle !== null ? triangle.lengths[2] : NaN} />
             </td>
           </tr>
         </tbody>
