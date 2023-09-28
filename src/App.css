@@ -13,3 +13,7 @@
 .App {
   margin: 20px;
 }
+
+.error-message {
+  color: red;
+}

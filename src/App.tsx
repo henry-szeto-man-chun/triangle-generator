@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import Triangle from './Triangle';
 import CanvasDrawer from './CanvasDrawer';
 import './App.css';
-import { TriangleFactory } from './TriangleFactory';
+import { TriangleFactory, TriangleDataError } from './TriangleFactory';
 import TextInput from './components/TextInput';
 import { AngleInput, LengthInput } from './components/TriangleDataInput';
 
@@ -12,6 +12,7 @@ function App() {
   const [lengths, setLengths] = useState(Array<number>(3).fill(NaN))
   const [rotation, setRotation] = useState(0)
   const [triangle, setTriangle] = useState<Triangle | null>(null)
+  const [errorMessage, setErrorMessage] = useState('')
   const [labelA, setLabelA] = useState('α')
   const [labelB, setLabelB] = useState('β')
   const [labelC, setLabelC] = useState('γ')
@@ -25,24 +26,50 @@ function App() {
   }
 
   function handleAnglesChange(value: string, index: number) {
-    angles[index] = parseFloat(value);
-    setAngles(angles);
+    const nextAngles = angles.map((oldValue, i) => {
+      if (i === index) {
+        return parseFloat(value);
+      } else {
+        return oldValue
+      }
+    })
 
-    createTriangle();
+    try {
+      createTriangle(nextAngles, lengths);
+      setAngles(nextAngles);
+      setErrorMessage('');
+    } catch (error) {
+      if (error instanceof TriangleDataError) {
+        setErrorMessage(error.message);
+      }
+    }
   }
 
 
 
   function handleLengthsChange(value: string, index: number) {
-    lengths[index] = parseFloat(value);
-    setLengths(lengths);
-
-    createTriangle();
+    const nextLengths = lengths.map((oldValue, i) => {
+      if (i === index) {
+        return parseFloat(value);
+      } else {
+        return oldValue
+      }
+    })
+    
+    try {
+      createTriangle(angles, nextLengths);
+      setLengths(nextLengths);
+      setErrorMessage('');
+    } catch (error) {
+      if (error instanceof TriangleDataError) {
+        setErrorMessage(error.message);
+      }
+    }
   }
 
-  function createTriangle() {
+  function createTriangle(nextAngles: number[], nextLengths: number[]) {
     const triangleFactory = new TriangleFactory();
-    const triangle = triangleFactory.createFromPartialAnglesAndLengths(angles, lengths);
+    const triangle = triangleFactory.createFromPartialAnglesAndLengths(nextAngles, nextLengths);
     setTriangle(triangle);
   }
 
@@ -62,7 +89,7 @@ function App() {
       <h1>
         Triangle Generator
       </h1>
-      
+
       <p>
         Instructions: input angles and lengths of sides to generate an image, right click on image to save.
       </p>
@@ -73,13 +100,28 @@ function App() {
           </tr>
           <tr>
             <td>
-              <AngleInput prompt='&alpha;: ' getter={angles} index={0} handler={handleAnglesChange} inferredValue={triangle !== null ? triangle.angles[0] : NaN} />
+              <AngleInput
+                prompt='&alpha;: '
+                getter={angles}
+                index={0}
+                handler={handleAnglesChange}
+                inferredValue={triangle !== null ? triangle.angles[0] : NaN} />
             </td>
             <td>
-              <AngleInput prompt='&beta;: ' getter={angles} index={1} handler={handleAnglesChange} inferredValue={triangle !== null ? triangle.angles[1] : NaN} />
+              <AngleInput
+                prompt='&beta;: '
+                getter={angles}
+                index={1}
+                handler={handleAnglesChange}
+                inferredValue={triangle !== null ? triangle.angles[1] : NaN} />
             </td>
             <td>
-              <AngleInput prompt='&gamma;: ' getter={angles} index={2} handler={handleAnglesChange} inferredValue={triangle !== null ? triangle.angles[2] : NaN} />
+              <AngleInput
+                prompt='&gamma;: '
+                getter={angles}
+                index={2}
+                handler={handleAnglesChange}
+                inferredValue={triangle !== null ? triangle.angles[2] : NaN} />
             </td>
           </tr>
           <tr>
@@ -87,17 +129,33 @@ function App() {
           </tr>
           <tr>
             <td>
-              <LengthInput prompt='a: ' getter={lengths} index={0} handler={handleLengthsChange} inferredValue={triangle !== null ? triangle.lengths[0] : NaN} />
+              <LengthInput
+                prompt='a: '
+                getter={lengths}
+                index={0}
+                handler={handleLengthsChange}
+                inferredValue={triangle !== null ? triangle.lengths[0] : NaN} />
             </td>
             <td>
-              <LengthInput prompt='b: ' getter={lengths} index={1} handler={handleLengthsChange} inferredValue={triangle !== null ? triangle.lengths[1] : NaN}/>
+              <LengthInput
+                prompt='b: '
+                getter={lengths}
+                index={1}
+                handler={handleLengthsChange}
+                inferredValue={triangle !== null ? triangle.lengths[1] : NaN} />
             </td>
             <td>
-              <LengthInput prompt='c: ' getter={lengths} index={2} handler={handleLengthsChange} inferredValue={triangle !== null ? triangle.lengths[2] : NaN} />
+              <LengthInput
+                prompt='c: '
+                getter={lengths}
+                index={2}
+                handler={handleLengthsChange}
+                inferredValue={triangle !== null ? triangle.lengths[2] : NaN} />
             </td>
           </tr>
         </tbody>
       </table>
+      <p className='error-message'>{errorMessage}</p>
       <table>
         <tbody>
           <tr>
@@ -135,12 +193,12 @@ function App() {
 
       </table>
       <p>
-      <label htmlFor='dpiEle'>DPI: </label>
-      <input
-        id='dpiEle'
-        type='number'
-        value={dpi}
-        onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleDpiChange(e.currentTarget.value)} />
+        <label htmlFor='dpiEle'>DPI: </label>
+        <input
+          id='dpiEle'
+          type='number'
+          value={dpi}
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleDpiChange(e.currentTarget.value)} />
       </p>
       <canvas id='myCanvas' width='400' height='400'></canvas>
     </div>

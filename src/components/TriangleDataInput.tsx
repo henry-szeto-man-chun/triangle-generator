@@ -11,10 +11,10 @@ function AngleInput({prompt, getter, index, handler, inferredValue}: {prompt: st
                 className='inputs'
                 type='number'
                 value={isNaN(getter[index]) ? '' : roundToDecimal(getter[index], 2)}
-                placeholder={(!isNaN(inferredValue) && isNaN(getter[index])) ? inferredValue.toPrecision(2) : ''}
+                placeholder={(!isNaN(inferredValue) && isNaN(getter[index])) ? roundToDecimal(inferredValue, 2).toString() : ''}
                 disabled={!isNaN(inferredValue) && isNaN(getter[index])}
-                min='0.01'
-                max='179.98'
+                min='0'
+                max='180'
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => handler(e.currentTarget.value, index)}
             />
         </>
@@ -31,9 +31,9 @@ function LengthInput({prompt, getter, index, handler, inferredValue}: {prompt: s
                 className='inputs'
                 type='number'
                 value={isNaN(getter[index]) ? '' : roundToDecimal(getter[index], 2)}
-                placeholder={(!isNaN(inferredValue) && isNaN(getter[index])) ? inferredValue.toPrecision(2) : ''}
+                placeholder={(!isNaN(inferredValue) && isNaN(getter[index])) ? roundToDecimal(inferredValue, 2).toString() : ''}
                 disabled={!isNaN(inferredValue) && isNaN(getter[index])}
-                min='0.01'
+                min='0'
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => handler(e.currentTarget.value, index)}
             />
         </>

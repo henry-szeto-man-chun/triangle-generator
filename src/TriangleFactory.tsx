@@ -10,10 +10,13 @@ class TriangleFactory {
 
     createFromPartialAnglesAndLengths(angles: number[], lengths: number[]) {
         let applicableRules = this.rules.filter(x => x.isApplicable(angles, lengths))
+            .concat([new VerifyNonZero()])
         while (!this.isComplete(angles, lengths) && applicableRules.length > 0) {
-            [angles, lengths] = applicableRules[0].apply(angles, lengths);
+            for (let i = 0; i < applicableRules.length; i++) {
+                [angles, lengths] = applicableRules[i].apply(angles, lengths)
+            }
             applicableRules = this.rules.filter(x => x.isApplicable(angles, lengths));
-        } 
+        }
 
         return new Triangle(angles, lengths)
     }
@@ -29,6 +32,24 @@ class TriangleFactory {
 interface TriangleRule {
     isApplicable(angles: number[], lengths: number[]): boolean;
     apply(angles: number[], lengths: number[]): number[][];
+}
+
+class VerifyNonZero implements TriangleRule {
+    isApplicable(angles: number[], lengths: number[]): boolean {
+        return true;
+    }
+    apply(angles: number[], lengths: number[]): number[][] {
+        angles.forEach((angle) => {
+            if (angle <= 0) throw new TriangleDataError("Angle must be greater than 0.")
+        })
+
+        lengths.forEach((length) => {
+            if (length <= 0) throw new TriangleDataError("Length of side must be greater than 0.")
+        })
+
+        return [angles.slice(), lengths.slice()]
+    }
+
 }
 
 class SumOfInteriorAnglesRule implements TriangleRule {
