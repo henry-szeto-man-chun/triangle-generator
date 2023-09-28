@@ -55,7 +55,7 @@ function App() {
         return oldValue
       }
     })
-    
+
     try {
       createTriangle(angles, nextLengths);
       setLengths(nextLengths);
@@ -93,113 +93,99 @@ function App() {
       <p>
         Instructions: input angles and lengths of sides to generate an image, right click on image to save.
       </p>
-      <table>
-        <tbody>
-          <tr>
-            <td colSpan={3}>Angles (degree):</td>
-          </tr>
-          <tr>
-            <td>
-              <AngleInput
-                prompt='&alpha;: '
-                getter={angles}
-                index={0}
-                handler={handleAnglesChange}
-                inferredValue={triangle !== null ? triangle.angles[0] : NaN} />
-            </td>
-            <td>
-              <AngleInput
-                prompt='&beta;: '
-                getter={angles}
-                index={1}
-                handler={handleAnglesChange}
-                inferredValue={triangle !== null ? triangle.angles[1] : NaN} />
-            </td>
-            <td>
-              <AngleInput
-                prompt='&gamma;: '
-                getter={angles}
-                index={2}
-                handler={handleAnglesChange}
-                inferredValue={triangle !== null ? triangle.angles[2] : NaN} />
-            </td>
-          </tr>
-          <tr>
-            <td colSpan={3}>Lengths (cm):</td>
-          </tr>
-          <tr>
-            <td>
-              <LengthInput
-                prompt='a: '
-                getter={lengths}
-                index={0}
-                handler={handleLengthsChange}
-                inferredValue={triangle !== null ? triangle.lengths[0] : NaN} />
-            </td>
-            <td>
-              <LengthInput
-                prompt='b: '
-                getter={lengths}
-                index={1}
-                handler={handleLengthsChange}
-                inferredValue={triangle !== null ? triangle.lengths[1] : NaN} />
-            </td>
-            <td>
-              <LengthInput
-                prompt='c: '
-                getter={lengths}
-                index={2}
-                handler={handleLengthsChange}
-                inferredValue={triangle !== null ? triangle.lengths[2] : NaN} />
-            </td>
-          </tr>
-        </tbody>
-      </table>
-      <p className='error-message'>{errorMessage}</p>
-      <table>
-        <tbody>
-          <tr>
-            <td colSpan={2}>Rotation (degree):</td>
-          </tr>
-          <tr>
-            <td><input
-              className='slider'
-              type='range'
-              min='-180'
-              max='180'
-              value={rotation}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleRotationChange(e.currentTarget.value)} /></td>
-            <td><input
-              type='number'
-              min='-180'
-              max='180'
-              value={rotation}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleRotationChange(e.currentTarget.value)} /></td>
-          </tr>
-        </tbody>
 
-      </table>
-      <table>
-        <tbody>
-          <tr>
-            <td colSpan={3}>Labels:</td>
-          </tr>
-          <tr>
-            <td><TextInput prompt='&alpha;: ' getter={labelA} setter={setLabelA} /></td>
-            <td><TextInput prompt='&beta;: ' getter={labelB} setter={setLabelB} /></td>
-            <td><TextInput prompt='&gamma;: ' getter={labelC} setter={setLabelC} /></td>
-          </tr>
-        </tbody>
-
-      </table>
-      <p>
-        <label htmlFor='dpiEle'>DPI: </label>
+      <div className='data-box'>
+        <p>Angles (degree):</p>
+        <ul>
+          <li className='data-input'><AngleInput
+            prompt='&alpha;: '
+            getter={angles}
+            index={0}
+            handler={handleAnglesChange}
+            triangle={triangle} />
+          </li>
+          <li className='data-input'>
+            <AngleInput
+              prompt='&beta;: '
+              getter={angles}
+              index={1}
+              handler={handleAnglesChange}
+              triangle={triangle} />
+          </li>
+          <li className='data-input'>
+            <AngleInput
+              prompt='&gamma;: '
+              getter={angles}
+              index={2}
+              handler={handleAnglesChange}
+              triangle={triangle} />
+          </li>
+        </ul>
+      </div>
+      <div className='data-box'>
+        <p>Lengths (cm):</p>
+        <ul>
+          <li className='data-input'>
+            <LengthInput
+              prompt='a: '
+              getter={lengths}
+              index={0}
+              handler={handleLengthsChange}
+              triangle={triangle} />
+          </li>
+          <li className='data-input'>
+            <LengthInput
+              prompt='b: '
+              getter={lengths}
+              index={1}
+              handler={handleLengthsChange}
+              triangle={triangle} />
+          </li>
+          <li className='data-input'>
+            <LengthInput
+              prompt='c: '
+              getter={lengths}
+              index={2}
+              handler={handleLengthsChange}
+              triangle={triangle} />
+          </li>
+        </ul>
+      </div>
+      <div className='data-box'>
+        {errorMessage ? <p className='error-message'>errorMessage</p> : ''}
+      </div>
+      <div className='data-box'>
+        <p>Rotation (degree):</p>
+        <input
+          className='slider'
+          type='range'
+          min='-180'
+          max='180'
+          value={rotation}
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleRotationChange(e.currentTarget.value)} />
+        <input
+          type='number'
+          min='-180'
+          max='180'
+          value={rotation}
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleRotationChange(e.currentTarget.value)} />
+      </div>
+      <div className='data-box'>
+        <p>Labels:</p>
+        <ul>
+          <li className='data-input'><TextInput prompt='&alpha;: ' getter={labelA} setter={setLabelA} /></li>
+          <li className='data-input'><TextInput prompt='&beta;: ' getter={labelB} setter={setLabelB} /></li>
+          <li className='data-input'><TextInput prompt='&gamma;: ' getter={labelC} setter={setLabelC} /></li>
+        </ul>
+      </div>
+      <div className='data-box'>
+      <label htmlFor='dpiEle'>DPI: </label>
         <input
           id='dpiEle'
           type='number'
           value={dpi}
           onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleDpiChange(e.currentTarget.value)} />
-      </p>
+      </div>
       <canvas id='myCanvas' width='400' height='400'></canvas>
     </div>
   );

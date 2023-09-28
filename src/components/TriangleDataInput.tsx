@@ -1,7 +1,9 @@
 import React from "react";
+import Triangle from "../Triangle";
 
-function AngleInput({prompt, getter, index, handler, inferredValue}: {prompt: string, getter: number[], index: number, handler: Function, inferredValue: number}) {
+function AngleInput({prompt, getter, index, handler, triangle}: {prompt: string, getter: number[], index: number, handler: Function, triangle: Triangle | null}) {
     const id = React.useId()
+    const inferredValue = (triangle !== null) ? triangle.angles[index] : NaN
 
     return (
         <>
@@ -21,8 +23,10 @@ function AngleInput({prompt, getter, index, handler, inferredValue}: {prompt: st
     )
 }
 
-function LengthInput({prompt, getter, index, handler, inferredValue}: {prompt: string, getter: number[], index: number, handler: Function, inferredValue: number}) {
+function LengthInput({prompt, getter, index, handler, triangle}: {prompt: string, getter: number[], index: number, handler: Function, triangle: Triangle | null}) {
     const id = React.useId()
+    const inferredValue = (triangle !== null) ? triangle.lengths[index] : NaN
+
     return (
         <>
             <label htmlFor={id}>{prompt}</label>

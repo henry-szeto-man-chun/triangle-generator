@@ -1,3 +1,12 @@
+.data-box {
+  clear: both;
+}
+
+.data-input {
+  list-style-type: none;
+  float: left;
+}
+
 .inputs {
   width: 100px;
 }
