@@ -1,13 +1,28 @@
 import React from "react";
 import Triangle from "../Triangle";
 
-function AngleInput({prompt, getter, index, handler, triangle}: {prompt: string, getter: number[], index: number, handler: Function, triangle: Triangle | null}) {
+function AnglesInputGroup({ getter, handler, triangle }: { getter: number[], handler: Function, triangle: Triangle | null }) {
+    const labels = ['\u{03b1}: ', '\u{03b2}: ', '\u{03b3}: ']
+    const inputs = labels.map((label, index) =>
+        <li className="data-input">
+            <AngleInput label={label} getter={getter} index={index} handler={handler} triangle={triangle} />
+        </li>
+    );
+
+    return (
+        <ul>
+            {inputs}
+        </ul>
+    )
+}
+
+function AngleInput({ label, getter, index, handler, triangle }: { label: string, getter: number[], index: number, handler: Function, triangle: Triangle | null }) {
     const id = React.useId()
     const inferredValue = (triangle !== null) ? triangle.angles[index] : NaN
 
     return (
         <>
-            <label htmlFor={id}>{prompt}</label>
+            <label htmlFor={id}>{label}</label>
             <input
                 id={id}
                 className='inputs'
@@ -23,13 +38,28 @@ function AngleInput({prompt, getter, index, handler, triangle}: {prompt: string,
     )
 }
 
-function LengthInput({prompt, getter, index, handler, triangle}: {prompt: string, getter: number[], index: number, handler: Function, triangle: Triangle | null}) {
+function SidesInputGroup({ getter, handler, triangle }: { getter: number[], handler: Function, triangle: Triangle | null }) {
+    const labels = ['a: ', 'b: ', 'c: '];
+    const inputs = labels.map((label, index) => 
+        <li className="data-input">
+            <SideInput label={label} getter={getter} index={index} handler={handler} triangle={triangle} />
+        </li>
+    );
+
+    return (
+        <ul>
+            {inputs}
+        </ul>
+    )
+}
+
+function SideInput({ label, getter, index, handler, triangle }: { label: string, getter: number[], index: number, handler: Function, triangle: Triangle | null }) {
     const id = React.useId()
     const inferredValue = (triangle !== null) ? triangle.lengths[index] : NaN
 
     return (
         <>
-            <label htmlFor={id}>{prompt}</label>
+            <label htmlFor={id}>{label}</label>
             <input
                 id={id}
                 className='inputs'
@@ -50,6 +80,6 @@ function roundToDecimal(x: number, n: number) {
 }
 
 export {
-    AngleInput,
-    LengthInput
+    AnglesInputGroup,
+    SidesInputGroup
 }

@@ -4,7 +4,7 @@ import CanvasDrawer from './CanvasDrawer';
 import './App.css';
 import { TriangleFactory, TriangleDataError } from './TriangleFactory';
 import TextInput from './components/TextInput';
-import { AngleInput, LengthInput } from './components/TriangleDataInput';
+import { AnglesInputGroup, SidesInputGroup } from './components/TriangleDataInput';
 
 function App() {
   const [dpi, setDpi] = useState(300)
@@ -94,67 +94,24 @@ function App() {
         Instructions: input angles and lengths of sides to generate an image, right click on image to save.
       </p>
 
-      <div className='data-box'>
+      <section className='data-box'>
         <p>Angles (degree):</p>
-        <ul>
-          <li className='data-input'><AngleInput
-            prompt='&alpha;: '
-            getter={angles}
-            index={0}
-            handler={handleAnglesChange}
-            triangle={triangle} />
-          </li>
-          <li className='data-input'>
-            <AngleInput
-              prompt='&beta;: '
-              getter={angles}
-              index={1}
-              handler={handleAnglesChange}
-              triangle={triangle} />
-          </li>
-          <li className='data-input'>
-            <AngleInput
-              prompt='&gamma;: '
-              getter={angles}
-              index={2}
-              handler={handleAnglesChange}
-              triangle={triangle} />
-          </li>
-        </ul>
-      </div>
-      <div className='data-box'>
+        <AnglesInputGroup
+          getter={angles}
+          handler={handleAnglesChange}
+          triangle={triangle} />
+      </section>
+      <section className='data-box'>
         <p>Lengths (cm):</p>
-        <ul>
-          <li className='data-input'>
-            <LengthInput
-              prompt='a: '
-              getter={lengths}
-              index={0}
-              handler={handleLengthsChange}
-              triangle={triangle} />
-          </li>
-          <li className='data-input'>
-            <LengthInput
-              prompt='b: '
-              getter={lengths}
-              index={1}
-              handler={handleLengthsChange}
-              triangle={triangle} />
-          </li>
-          <li className='data-input'>
-            <LengthInput
-              prompt='c: '
-              getter={lengths}
-              index={2}
-              handler={handleLengthsChange}
-              triangle={triangle} />
-          </li>
-        </ul>
-      </div>
-      <div className='data-box'>
+        <SidesInputGroup
+          getter={lengths}
+          handler={handleLengthsChange}
+          triangle={triangle} />
+      </section>
+      <section className='data-box'>
         {errorMessage ? <p className='error-message'>errorMessage</p> : ''}
-      </div>
-      <div className='data-box'>
+      </section>
+      <section className='data-box'>
         <p>Rotation (degree):</p>
         <input
           className='slider'
@@ -169,23 +126,25 @@ function App() {
           max='180'
           value={rotation}
           onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleRotationChange(e.currentTarget.value)} />
-      </div>
-      <div className='data-box'>
+      </section>
+      <section className='data-box'>
         <p>Labels:</p>
         <ul>
           <li className='data-input'><TextInput prompt='&alpha;: ' getter={labelA} setter={setLabelA} /></li>
           <li className='data-input'><TextInput prompt='&beta;: ' getter={labelB} setter={setLabelB} /></li>
           <li className='data-input'><TextInput prompt='&gamma;: ' getter={labelC} setter={setLabelC} /></li>
         </ul>
-      </div>
-      <div className='data-box'>
-      <label htmlFor='dpiEle'>DPI: </label>
+      </section>
+      <section className='data-box'>
+        <p>
+          <label htmlFor='dpiEle'>DPI: </label>
+        </p>
         <input
           id='dpiEle'
           type='number'
           value={dpi}
           onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleDpiChange(e.currentTarget.value)} />
-      </div>
+      </section>
       <canvas id='myCanvas' width='400' height='400'></canvas>
     </div>
   );
