@@ -1,27 +1,27 @@
-.input-sections {
+.input-section {
   clear: both;
 }
 
-.input-groups {
+.input-group {
   padding-inline-start: 5px;
 }
 
-.input-wrappers {
+.input-wrapper {
   list-style-type: none;
   margin: 5px;
   float: left;
 }
 
-.inputs {
+.input-wide {
   width: 100px;
 }
 
-.labelInputs {
-  width: 45px;
+.input-narrow {
+  width: 50px;
 }
 
 .slider {
-  width: 500px;
+  width: 400px;
 }
 
 .App {

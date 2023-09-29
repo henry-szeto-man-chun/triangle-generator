@@ -9,6 +9,7 @@ function RotationInput({rotation, onRotationChange}: {rotation: number, onRotati
           value={rotation.toString()}
           onChange={(e: React.ChangeEvent<HTMLInputElement>) => onRotationChange(e.currentTarget.value)} />
         <input
+          className='input-narrow'
           type='number'
           min='-180'
           max='180'

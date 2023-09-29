@@ -9,16 +9,18 @@ class TriangleFactory {
     ];
 
     createFromPartialAnglesAndLengths(angles: number[], sides: number[]) {
-        let applicableRules = this.rules.filter(x => x.isApplicable(angles, sides))
-            .concat([new VerifyNonZero()]) // verify only need to be ran once
-        while (!this.isComplete(angles, sides) && applicableRules.length > 0) {
+        let finalAngles = angles.slice()
+        let finalSides = sides.slice()
+        let applicableRules = [new VerifyNonZero()] // verify only need to be ran once
+            .concat(this.rules.filter(x => x.isApplicable(finalAngles, finalSides)))
+        while (!this.isComplete(finalAngles, finalSides) && applicableRules.length > 0) {
             for (let i = 0; i < applicableRules.length; i++) {
-                [angles, sides] = applicableRules[i].apply(angles, sides)
+                [finalAngles, finalSides] = applicableRules[i].apply(finalAngles, finalSides)
             }
-            applicableRules = this.rules.filter(x => x.isApplicable(angles, sides));
+            applicableRules = this.rules.filter(x => x.isApplicable(finalAngles, finalSides));
         }
 
-        return new Triangle(angles, sides)
+        return new Triangle(finalAngles, finalSides)
     }
 
     private isComplete(angles: number[], sides: number[]) {

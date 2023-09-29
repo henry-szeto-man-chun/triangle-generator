@@ -6,7 +6,7 @@ function TextInput({ prompt, getter, setter }: { prompt: string, getter: string,
       <>
         <label htmlFor={id}>{prompt}</label>
         <input
-          className='labelInputs'
+          className='input-narrow'
           type='text'
           value={getter}
           onChange={(e: React.ChangeEvent<HTMLInputElement>) => setter(e.currentTarget.value)}

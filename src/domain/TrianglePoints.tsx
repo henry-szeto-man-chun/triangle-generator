@@ -7,26 +7,18 @@ class TrianglePoints {
 
     rotate(rotation: number) {
         const rad = rotation * Math.PI / 180
-        const new_points: number[][] = [[], [], []]
-        for (let i = 0; i < 3; i++) {
-            let x = this.points[i][0]
-            let y = this.points[i][1]
-            new_points[i][0] = x * Math.cos(rad) - y * Math.sin(rad)
-            new_points[i][1] = x * Math.sin(rad) + y * Math.cos(rad)
-        }
+        const newPoints = this.points.map(([x, y]) => [
+            x * Math.cos(rad) - y * Math.sin(rad),
+            x * Math.sin(rad) + y * Math.cos(rad)
+        ])
 
-        return new TrianglePoints(new_points)
+        return new TrianglePoints(newPoints)
     }
 
     shift() {
-        let [minX, minY] = this.getMinXY()
-        let new_points: number[][] = [[], [], []]
-        for (let i = 0; i < 3; i++) {
-            new_points[i][0] = this.points[i][0] - minX
-            new_points[i][1] = this.points[i][1] - minY
-        }
-
-        return new TrianglePoints(new_points)
+        const [minX, minY] = this.getMinXY()
+        const newPoints = this.points.map(([x, y]) => [x - minX, y - minY])
+        return new TrianglePoints(newPoints)
     }
 
     getMiddlePoint() {

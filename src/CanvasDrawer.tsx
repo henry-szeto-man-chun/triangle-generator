@@ -27,11 +27,11 @@ class CanvasDrawer {
 
     convertTriangleToPoints(angles: number[], lengths: number[], length_factor: number) {
         let pointA = [0, 0]
-        let pointB = [lengths[2] * length_factor, 0]
-        let pointC = [
-            Math.cos(angles[0] * Math.PI / 180) * lengths[1] * length_factor,
-            Math.sin(angles[0] * Math.PI / 180) * lengths[1] * length_factor
+        let pointB = [
+            Math.cos(angles[0] * Math.PI / 180) * lengths[2] * length_factor,
+            -Math.sin(angles[0] * Math.PI / 180) * lengths[2] * length_factor
         ]
+        let pointC = [lengths[1] * length_factor, 0]
 
         return new TrianglePoints([pointA, pointB, pointC])
     }

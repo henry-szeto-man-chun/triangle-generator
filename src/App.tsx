@@ -95,39 +95,59 @@ function App() {
         Instructions: input angles and lengths of sides to generate an image, right click on image to save.
       </p>
 
-      <section className='input-sections'>
+      <section className='input-section'>
         <p>Angles (degree):</p>
         <AnglesInputGroup
           getter={angles}
           handler={handleAnglesChange}
           triangle={triangle} />
       </section>
-      <section className='input-sections'>
+      <section className='input-section'>
         <p>Sides (cm):</p>
         <SidesInputGroup
           getter={lengths}
           handler={handleLengthsChange}
           triangle={triangle} />
       </section>
-      <section className='input-sections'>
+      <section className='input-section'>
         {errorMessage ? <p className='error-message'>{errorMessage}</p> : ''}
       </section>
-      <section className='input-sections'>
+      <section className='input-section'>
         <p>Rotation (degree):</p>
         <RotationInput
           rotation={rotation}
           onRotationChange={handleRotationChange}
         />
       </section>
-      <section className='input-sections'>
+      <section className='input-section'>
         <p>Labels:</p>
-        <ul className='input-groups'>
-          <li className='input-wrappers'><TextInput prompt='&alpha;: ' getter={labelA} setter={setLabelA} /></li>
-          <li className='input-wrappers'><TextInput prompt='&beta;: ' getter={labelB} setter={setLabelB} /></li>
-          <li className='input-wrappers'><TextInput prompt='&gamma;: ' getter={labelC} setter={setLabelC} /></li>
+        <ul className='input-group'>
+          <li className='input-wrapper'><TextInput prompt='&alpha;: ' getter={labelA} setter={setLabelA} /></li>
+          <li className='input-wrapper'><TextInput prompt='&beta;: ' getter={labelB} setter={setLabelB} /></li>
+          <li className='input-wrapper'><TextInput prompt='&gamma;: ' getter={labelC} setter={setLabelC} /></li>
         </ul>
       </section>
-      <section className='input-sections'>
+      <section className='input-section'>
+        <p>Angle labels:</p>
+        <table style={{ textAlign: 'center' }}>
+          <thead>
+            <tr>
+              <td></td><td>Arc</td><td>Degree</td><td>Label</td><td>Label Offset</td><td>Font Size</td>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>&alpha;</td>
+              <td><input type='checkbox'></input></td>
+              <td><input type='checkbox'></input></td>
+              <td><input className='input-narrow' type='input'></input></td>
+              <td><input type='range'></input></td>
+              <td><input className='input-narrow' type='number'></input></td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+      <section className='input-section'>
         <p>
           <label htmlFor='dpiEle'>DPI: </label>
         </p>
