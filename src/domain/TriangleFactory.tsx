@@ -23,8 +23,8 @@ class TriangleFactory {
 
     private isComplete(angles: number[], sides: number[]) {
         return (
-            angles.filter(x => isNumber(x)).length === 3 &&
-            sides.filter(x => isNumber(x)).length === 3
+            angles.filter(x => !isNaN(x)).length === 3 &&
+            sides.filter(x => !isNaN(x)).length === 3
         )
     }
 }
@@ -54,17 +54,17 @@ class VerifyNonZero implements TriangleRule {
 
 class SumOfInteriorAnglesRule implements TriangleRule {
     isApplicable(angles: number[], sides: number[]): boolean {
-        const nonEmptyAngles = angles.filter(x => isNumber(x));
+        const nonEmptyAngles = angles.filter(x => !isNaN(x));
         if (nonEmptyAngles.length == 2) return true;
         else return false;
     }
     apply(angles: number[], sides: number[]): number[][] {
         const newAngles = angles.slice()
-        const sum = angles.filter(x => isNumber(x)).reduce((x, y) => x + y)
+        const sum = angles.filter(x => !isNaN(x)).reduce((x, y) => x + y)
         if (sum >= 180) throw new TriangleDataError("Sum of interior angles cannot be greater than 180.");
 
         for (let i = 0; i < 3; i++) {
-            if (!isNumber(angles[i])) {
+            if (isNaN(angles[i])) {
                 newAngles[i] = 180 - sum;
             }
         }
@@ -76,7 +76,7 @@ class SumOfInteriorAnglesRule implements TriangleRule {
 
 class CosineRuleOfSide implements TriangleRule {
     isApplicable(angles: number[], sides: number[]): boolean {
-        const nonEmptyLengths = sides.filter(x => isNumber(x));
+        const nonEmptyLengths = sides.filter(x => !isNaN(x));
         if (nonEmptyLengths.length === 3) return true;
         else return false;
     }
@@ -102,8 +102,8 @@ class CosineRuleOfSide implements TriangleRule {
 
 class CosineRuleOfAngle implements TriangleRule {
     isApplicable(angles: number[], sides: number[]): boolean {
-        const nonEmptyAngles = angles.filter(x => isNumber(x));
-        const nonEmptyLengths = sides.filter(x => isNumber(x));
+        const nonEmptyAngles = angles.filter(x => !isNaN(x));
+        const nonEmptyLengths = sides.filter(x => !isNaN(x));
         if (
             nonEmptyAngles.length == 1 &&
             nonEmptyLengths.length == 2 &&
@@ -115,8 +115,8 @@ class CosineRuleOfAngle implements TriangleRule {
         const nextLengths = sides.slice()
         const indices = []
         for (let i = 0; i < 3; i++) { //find where the given lengths and angles are
-            if (isNumber(sides[i])) indices.unshift(i) //put lenghts at indices 0, 1
-            else if (isNumber(angles[i])) indices.push(i) //put angle at 2
+            if (!isNaN(sides[i])) indices.unshift(i) //put lenghts at indices 0, 1
+            else if (!isNaN(angles[i])) indices.push(i) //put angle at 2
         }
         const a = sides[indices[0]]
         const b = sides[indices[1]]
@@ -127,7 +127,7 @@ class CosineRuleOfAngle implements TriangleRule {
     }
     private haveNoPairs(angles: number[], sides: number[]) {
         for (let i = 0; i < 3; i++) {
-            if (isNumber(angles[i]) && isNumber(sides[i])) return false
+            if (!isNaN(angles[i]) && !isNaN(sides[i])) return false
         }
         return true
     }
@@ -135,8 +135,8 @@ class CosineRuleOfAngle implements TriangleRule {
 
 class SineRule implements TriangleRule {
     isApplicable(angles: number[], sides: number[]): boolean {
-        const nonEmptyAngles = angles.filter(x => isNumber(x));
-        const nonEmptyLengths = sides.filter(x => isNumber(x));
+        const nonEmptyAngles = angles.filter(x => !isNaN(x));
+        const nonEmptyLengths = sides.filter(x => !isNaN(x));
         if (
             (nonEmptyAngles.length + nonEmptyLengths.length) >= 3 &&
             (nonEmptyAngles.length + nonEmptyLengths.length) < 6 &&
@@ -151,12 +151,12 @@ class SineRule implements TriangleRule {
 
         const k = sides[index] / Math.sin(angles[index] * Math.PI / 180)
         for (let i = 0; i < 3; i++) {
-            if (isNumber(angles[i]) && !isNumber(sides[i])) {
+            if (!isNaN(angles[i]) && isNaN(sides[i])) {
                 nextLengths[i] = k * Math.sin(angles[i] * Math.PI / 180);
             }
-            else if (!isNumber(angles[i]) && isNumber(sides[i])) {
+            else if (isNaN(angles[i]) && !isNaN(sides[i])) {
                 const ratio = sides[i] / k;
-                const angle = (ratio > 1) ? 
+                const angle = (ratio > 1) ?
                     1 / (Math.asin(1 / ratio) * 180 / Math.PI) :
                     Math.asin(ratio) * 180 / Math.PI;
                 nextAngles[i] = angle;
@@ -166,7 +166,7 @@ class SineRule implements TriangleRule {
     }
     private findPair(angles: number[], sides: number[]) {
         for (let i = 0; i < 3; i++) {
-            if (isNumber(angles[i]) && isNumber(sides[i])) return i
+            if (!isNaN(angles[i]) && !isNaN(sides[i])) return i
         }
         return -1
     }
@@ -178,10 +178,6 @@ class TriangleDataError extends Error {
         this.name = "TriangleDataError"
         Object.setPrototypeOf(this, TriangleDataError.prototype)
     }
-}
-
-function isNumber(x: number) {
-    return x !== null && !isNaN(x)
 }
 
 export {

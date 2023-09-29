@@ -44,7 +44,7 @@ class TrianglePoints {
         const result = [0, 0]
         const lengths = this.getLengths()
         const sum_of_lengths = lengths.reduce((x, y) => x + y)
-        for(let i=0; i<3; i++) {
+        for (let i = 0; i < 3; i++) {
             result[0] += lengths[i] * this.points[i][0]
             result[1] += lengths[i] * this.points[i][1]
         }
@@ -54,11 +54,10 @@ class TrianglePoints {
     }
 
     private getLengths() {
-        let result = []
-        for(let i=0; i<3; i++) {
-            let others = [0, 1, 2].filter(x => x !== i)
-            result[i] = this.getLength(this.points[others[0]], this.points[others[1]])
-        }
+        const result = [0,1, 2].map(index => {
+            let indices = [0, 1, 2].filter(x => x !== index)
+            return this.getLength(this.points[indices[0]], this.points[indices[1]])
+        })
         return result
     }
 
@@ -66,6 +65,27 @@ class TrianglePoints {
         let result = Math.sqrt(
             Math.pow(pointA[0] - pointB[0], 2) + Math.pow(pointA[1] - pointB[1], 2)
         )
+        return result
+    }
+
+    getStartEndAngles(index: number) {
+        const otherIndices = [0, 1, 2].filter(x => x !== index);
+        const result = [0, 1].map(i => Math.atan2(
+            this.points[otherIndices[i]][1] - this.points[index][1],
+            this.points[otherIndices[i]][0] - this.points[index][0]
+        ));
+        if (index === 1) return result.reverse();
+        else return result;
+    }
+
+    getBisectorPoints() {
+        const result = [0, 1, 2].map(index => {
+            let indices = [0, 1, 2].filter(x => x !== index)
+            return [
+                (this.points[indices[0]][0] + this.points[indices[1]][0]) / 2,
+                (this.points[indices[0]][1] + this.points[indices[1]][1]) / 2
+            ]
+        })
         return result
     }
 

@@ -1,6 +1,6 @@
 import Triangle from './domain/Triangle';
 import TrianglePoints from './domain/TrianglePoints';
-import { AngleLabels } from './domain/TriangleExtra';
+import { AngleArcs, AngleLabels, SideLabels } from './domain/TriangleLabels';
 
 class CanvasDrawer {
     private canvas: HTMLCanvasElement
@@ -16,8 +16,9 @@ class CanvasDrawer {
             .rotate(rotation)
             .shift()
         this.drawPoints(points)
-        const angleLabels = new AngleLabels(labels, 20)
-        angleLabels.draw(points, this.ctx)
+        new AngleLabels(labels, 20).draw(points, this.ctx)
+        new AngleArcs(10).draw(points, this.ctx)
+        new SideLabels(['a', 'b', 'c'], 20).draw(points, this.ctx)
     }
 
     dpiToLengthFactor(dpi: number) {

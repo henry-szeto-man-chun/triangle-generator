@@ -13,9 +13,9 @@ function App() {
   const [rotation, setRotation] = useState(0)
   const [triangle, setTriangle] = useState<Triangle | null>(null)
   const [errorMessage, setErrorMessage] = useState('')
-  const [labelA, setLabelA] = useState('α')
-  const [labelB, setLabelB] = useState('β')
-  const [labelC, setLabelC] = useState('γ')
+  const [labelA, setLabelA] = useState('A')
+  const [labelB, setLabelB] = useState('B')
+  const [labelC, setLabelC] = useState('C')
 
   useEffect(() => {
     redrawTriangle();
