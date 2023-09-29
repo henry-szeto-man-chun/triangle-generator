@@ -1,6 +1,6 @@
 import Triangle from './domain/Triangle';
 import TrianglePoints from './domain/TrianglePoints';
-import { AngleArcs, AngleLabels, SideLabels } from './domain/TriangleLabels';
+import { AngleArcs, AngleDegrees, AngleLabels, SideLabels } from './domain/TriangleLabels';
 
 class CanvasDrawer {
     private canvas: HTMLCanvasElement
@@ -17,7 +17,8 @@ class CanvasDrawer {
             .shift()
         this.drawPoints(points)
         new AngleLabels(labels, 20).draw(points, this.ctx)
-        new AngleArcs(10).draw(points, this.ctx)
+        new AngleArcs(20).draw(points, this.ctx)
+        new AngleDegrees(triangle.angles, 20, 16).draw(points, this.ctx)
         new SideLabels(['a', 'b', 'c'], 20).draw(points, this.ctx)
     }
 

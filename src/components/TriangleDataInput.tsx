@@ -1,5 +1,6 @@
 import React from "react";
 import Triangle from "../domain/Triangle";
+import { roundToDecimal } from "../utils";
 
 function AnglesInputGroup({ getter, handler, triangle }: { getter: number[], handler: Function, triangle: Triangle | null }) {
     const labels = ['\u{03b1}: ', '\u{03b2}: ', '\u{03b3}: ']
@@ -74,11 +75,6 @@ function SideInput({ label, getter, index, handler, triangle }: { label: string,
             />
         </>
     )
-}
-
-function roundToDecimal(x: number, n: number) {
-    let k = 10 ** n
-    return Math.round(x * k) / k
 }
 
 export {
