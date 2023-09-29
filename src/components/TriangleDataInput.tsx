@@ -6,7 +6,12 @@ function AnglesInputGroup({ getter, handler, triangle }: { getter: number[], han
     const labels = ['\u{03b1}: ', '\u{03b2}: ', '\u{03b3}: ']
     const inputs = labels.map((label, index) =>
         <li className="input-wrapper" key={index}>
-            <AngleInput label={label} getter={getter} index={index} handler={handler} triangle={triangle} />
+            <AngleInput
+                label={label}
+                getter={getter}
+                index={index}
+                handler={handler}
+                triangle={triangle} />
         </li>
     );
 
@@ -42,9 +47,14 @@ function AngleInput({ label, getter, index, handler, triangle }: { label: string
 
 function SidesInputGroup({ getter, handler, triangle }: { getter: number[], handler: Function, triangle: Triangle | null }) {
     const labels = ['a: ', 'b: ', 'c: '];
-    const inputs = labels.map((label, index) => 
+    const inputs = labels.map((label, index) =>
         <li className="input-wrapper" key={index}>
-            <SideInput label={label} getter={getter} index={index} handler={handler} triangle={triangle} />
+            <SideInput
+                label={label}
+                getter={getter}
+                index={index}
+                handler={handler}
+                triangle={triangle} />
         </li>
     );
 

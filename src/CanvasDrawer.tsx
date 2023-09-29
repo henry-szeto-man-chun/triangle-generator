@@ -12,7 +12,7 @@ class CanvasDrawer {
     }
 
     drawTriangle(triangle: Triangle, rotation: number, dpi: number, labels: string[]) {
-        let points = this.convertTriangleToPoints(triangle.angles, triangle.sides, this.dpiToLengthFactor(dpi))
+        let points = triangle.convertToPoints(this.dpiToLengthFactor(dpi))
             .rotate(rotation)
             .shift()
         this.drawPoints(points)
@@ -24,17 +24,6 @@ class CanvasDrawer {
 
     dpiToLengthFactor(dpi: number) {
         return dpi / 2.54
-    }
-
-    convertTriangleToPoints(angles: number[], lengths: number[], length_factor: number) {
-        let pointA = [0, 0]
-        let pointB = [
-            Math.cos(angles[0] * Math.PI / 180) * lengths[2] * length_factor,
-            -Math.sin(angles[0] * Math.PI / 180) * lengths[2] * length_factor
-        ]
-        let pointC = [lengths[1] * length_factor, 0]
-
-        return new TrianglePoints([pointA, pointB, pointC])
     }
 
     drawPoints(points: TrianglePoints) {
