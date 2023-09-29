@@ -10,7 +10,7 @@ class TriangleFactory {
 
     createFromPartialAnglesAndLengths(angles: number[], lengths: number[]) {
         let applicableRules = this.rules.filter(x => x.isApplicable(angles, lengths))
-            .concat([new VerifyNonZero()])
+            .concat([new VerifyNonZero()]) // verify only need to be ran once
         while (!this.isComplete(angles, lengths) && applicableRules.length > 0) {
             for (let i = 0; i < applicableRules.length; i++) {
                 [angles, lengths] = applicableRules[i].apply(angles, lengths)
@@ -81,7 +81,7 @@ class CosineRuleOfSide implements TriangleRule {
         else return false;
     }
     apply(angles: number[], lengths: number[]): number[][] {
-        const newAngles = angles.slice()
+        const nextAngles = angles.slice()
         const indices = [0, 1, 2]
         for (let i = 0; i < 3; i++) {
             const a = lengths[indices[0]]
@@ -89,12 +89,12 @@ class CosineRuleOfSide implements TriangleRule {
             const c = lengths[indices[2]]
 
             const cosC = (a ** 2 + b ** 2 - c ** 2) / (2 * a * b)
-            if (!isNaN(cosC) && !isNumber(newAngles[indices[2]])) {
-                newAngles[indices[2]] = Math.acos(cosC) * 180 / Math.PI
+            if (!isNaN(cosC) && !isNumber(nextAngles[indices[2]])) {
+                nextAngles[indices[2]] = Math.acos(cosC) * 180 / Math.PI
             }
-            indices.push(indices.shift() as number)
+            indices.push(indices.shift() as number) //rotate the indices
         }
-        return [newAngles, lengths.slice()]
+        return [nextAngles, lengths.slice()]
     }
 
 }
@@ -111,18 +111,18 @@ class CosineRuleOfAngle implements TriangleRule {
         else return false;
     }
     apply(angles: number[], lengths: number[]): number[][] {
-        const newLengths = lengths.slice()
+        const nextLengths = lengths.slice()
         const indices = []
-        for (let i = 0; i < 3; i++) {
-            if (isNumber(lengths[i])) indices.unshift(i)
-            else if (isNumber(angles[i])) indices.push(i)
+        for (let i = 0; i < 3; i++) { //find where the given lengths and angles are
+            if (isNumber(lengths[i])) indices.unshift(i) //put lenghts at indices 0, 1
+            else if (isNumber(angles[i])) indices.push(i) //put angle at 2
         }
         const a = lengths[indices[0]]
         const b = lengths[indices[1]]
         const gamma = angles[indices[2]]
 
-        newLengths[indices[2]] = Math.sqrt(a ** 2 + b ** 2 - 2 * a * b * Math.cos(gamma * Math.PI / 180))
-        return [angles.slice(), newLengths]
+        nextLengths[indices[2]] = Math.sqrt(a ** 2 + b ** 2 - 2 * a * b * Math.cos(gamma * Math.PI / 180))
+        return [angles.slice(), nextLengths]
     }
     private haveNoPairs(angles: number[], lengths: number[]) {
         for (let i = 0; i < 3; i++) {
@@ -138,33 +138,30 @@ class SineRule implements TriangleRule {
         const nonEmptyLengths = lengths.filter(x => isNumber(x));
         if (
             (nonEmptyAngles.length + nonEmptyLengths.length) >= 3 &&
-            (nonEmptyAngles.length + nonEmptyLengths.length) <= 6 &&
-            this.findPair(angles, lengths) != -1
+            (nonEmptyAngles.length + nonEmptyLengths.length) < 6 &&
+            this.findPair(angles, lengths) !== -1
         ) return true;
         else return false;
     }
     apply(angles: number[], lengths: number[]): number[][] {
-        const newAngles = angles.slice()
-        const newLengths = lengths.slice()
+        const nextAngles = angles.slice()
+        const nextLengths = lengths.slice()
         const index = this.findPair(angles, lengths)
 
         const k = lengths[index] / Math.sin(angles[index] * Math.PI / 180)
         for (let i = 0; i < 3; i++) {
             if (isNumber(angles[i]) && !isNumber(lengths[i])) {
-                newLengths[i] = k * Math.sin(angles[i] * Math.PI / 180);
+                nextLengths[i] = k * Math.sin(angles[i] * Math.PI / 180);
             }
             else if (!isNumber(angles[i]) && isNumber(lengths[i])) {
                 const ratio = lengths[i] / k;
-                let angle;
-                if (ratio > 1) {
-                    angle = 1 / (Math.asin(1 / ratio) * 180 / Math.PI);
-                } else {
-                    angle = Math.asin(ratio) * 180 / Math.PI;
-                }
-                newAngles[i] = angle;
+                const angle = (ratio > 1) ? 
+                    1 / (Math.asin(1 / ratio) * 180 / Math.PI) :
+                    Math.asin(ratio) * 180 / Math.PI;
+                nextAngles[i] = angle;
             }
         }
-        return [newAngles, newLengths]
+        return [nextAngles, nextLengths]
     }
     private findPair(angles: number[], lengths: number[]) {
         for (let i = 0; i < 3; i++) {
