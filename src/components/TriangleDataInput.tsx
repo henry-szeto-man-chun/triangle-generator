@@ -4,7 +4,7 @@ import Triangle from "../domain/Triangle";
 function AnglesInputGroup({ getter, handler, triangle }: { getter: number[], handler: Function, triangle: Triangle | null }) {
     const labels = ['\u{03b1}: ', '\u{03b2}: ', '\u{03b3}: ']
     const inputs = labels.map((label, index) =>
-        <li className="data-input">
+        <li className="data-input" key={index}>
             <AngleInput label={label} getter={getter} index={index} handler={handler} triangle={triangle} />
         </li>
     );
@@ -25,6 +25,7 @@ function AngleInput({ label, getter, index, handler, triangle }: { label: string
             <label htmlFor={id}>{label}</label>
             <input
                 id={id}
+                key={index}
                 className='inputs'
                 type='number'
                 value={isNaN(getter[index]) ? '' : roundToDecimal(getter[index], 2)}
@@ -41,7 +42,7 @@ function AngleInput({ label, getter, index, handler, triangle }: { label: string
 function SidesInputGroup({ getter, handler, triangle }: { getter: number[], handler: Function, triangle: Triangle | null }) {
     const labels = ['a: ', 'b: ', 'c: '];
     const inputs = labels.map((label, index) => 
-        <li className="data-input">
+        <li className="data-input" key={index}>
             <SideInput label={label} getter={getter} index={index} handler={handler} triangle={triangle} />
         </li>
     );
@@ -62,6 +63,7 @@ function SideInput({ label, getter, index, handler, triangle }: { label: string,
             <label htmlFor={id}>{label}</label>
             <input
                 id={id}
+                key={index}
                 className='inputs'
                 type='number'
                 value={isNaN(getter[index]) ? '' : roundToDecimal(getter[index], 2)}
