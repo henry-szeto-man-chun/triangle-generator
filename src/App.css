@@ -1,9 +1,14 @@
-.data-box {
+.input-sections {
   clear: both;
 }
 
-.data-input {
+.input-groups {
+  padding-inline-start: 5px;
+}
+
+.input-wrappers {
   list-style-type: none;
+  margin: 5px;
   float: left;
 }
 

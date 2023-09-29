@@ -5,6 +5,7 @@ import './App.css';
 import { TriangleFactory, TriangleDataError } from './domain/TriangleFactory';
 import TextInput from './components/TextInput';
 import { AnglesInputGroup, SidesInputGroup } from './components/TriangleDataInput';
+import RotationInput from './components/RotationInput';
 
 function App() {
   const [dpi, setDpi] = useState(300)
@@ -94,48 +95,39 @@ function App() {
         Instructions: input angles and lengths of sides to generate an image, right click on image to save.
       </p>
 
-      <section className='data-box'>
+      <section className='input-sections'>
         <p>Angles (degree):</p>
         <AnglesInputGroup
           getter={angles}
           handler={handleAnglesChange}
           triangle={triangle} />
       </section>
-      <section className='data-box'>
+      <section className='input-sections'>
         <p>Sides (cm):</p>
         <SidesInputGroup
           getter={lengths}
           handler={handleLengthsChange}
           triangle={triangle} />
       </section>
-      <section className='data-box'>
+      <section className='input-sections'>
         {errorMessage ? <p className='error-message'>{errorMessage}</p> : ''}
       </section>
-      <section className='data-box'>
+      <section className='input-sections'>
         <p>Rotation (degree):</p>
-        <input
-          className='slider'
-          type='range'
-          min='-180'
-          max='180'
-          value={rotation}
-          onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleRotationChange(e.currentTarget.value)} />
-        <input
-          type='number'
-          min='-180'
-          max='180'
-          value={rotation}
-          onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleRotationChange(e.currentTarget.value)} />
+        <RotationInput
+          rotation={rotation}
+          onRotationChange={handleRotationChange}
+        />
       </section>
-      <section className='data-box'>
+      <section className='input-sections'>
         <p>Labels:</p>
-        <ul>
-          <li className='data-input'><TextInput prompt='&alpha;: ' getter={labelA} setter={setLabelA} /></li>
-          <li className='data-input'><TextInput prompt='&beta;: ' getter={labelB} setter={setLabelB} /></li>
-          <li className='data-input'><TextInput prompt='&gamma;: ' getter={labelC} setter={setLabelC} /></li>
+        <ul className='input-groups'>
+          <li className='input-wrappers'><TextInput prompt='&alpha;: ' getter={labelA} setter={setLabelA} /></li>
+          <li className='input-wrappers'><TextInput prompt='&beta;: ' getter={labelB} setter={setLabelB} /></li>
+          <li className='input-wrappers'><TextInput prompt='&gamma;: ' getter={labelC} setter={setLabelC} /></li>
         </ul>
       </section>
-      <section className='data-box'>
+      <section className='input-sections'>
         <p>
           <label htmlFor='dpiEle'>DPI: </label>
         </p>
