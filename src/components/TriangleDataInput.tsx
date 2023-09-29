@@ -1,5 +1,5 @@
 import React from "react";
-import Triangle from "../Triangle";
+import Triangle from "../domain/Triangle";
 
 function AnglesInputGroup({ getter, handler, triangle }: { getter: number[], handler: Function, triangle: Triangle | null }) {
     const labels = ['\u{03b1}: ', '\u{03b2}: ', '\u{03b3}: ']
@@ -55,7 +55,7 @@ function SidesInputGroup({ getter, handler, triangle }: { getter: number[], hand
 
 function SideInput({ label, getter, index, handler, triangle }: { label: string, getter: number[], index: number, handler: Function, triangle: Triangle | null }) {
     const id = React.useId()
-    const inferredValue = (triangle !== null) ? triangle.lengths[index] : NaN
+    const inferredValue = (triangle !== null) ? triangle.sides[index] : NaN
 
     return (
         <>

@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import Triangle from './Triangle';
+import Triangle from './domain/Triangle';
 import CanvasDrawer from './CanvasDrawer';
 import './App.css';
-import { TriangleFactory, TriangleDataError } from './TriangleFactory';
+import { TriangleFactory, TriangleDataError } from './domain/TriangleFactory';
 import TextInput from './components/TextInput';
 import { AnglesInputGroup, SidesInputGroup } from './components/TriangleDataInput';
 
@@ -102,14 +102,14 @@ function App() {
           triangle={triangle} />
       </section>
       <section className='data-box'>
-        <p>Lengths (cm):</p>
+        <p>Sides (cm):</p>
         <SidesInputGroup
           getter={lengths}
           handler={handleLengthsChange}
           triangle={triangle} />
       </section>
       <section className='data-box'>
-        {errorMessage ? <p className='error-message'>errorMessage</p> : ''}
+        {errorMessage ? <p className='error-message'>{errorMessage}</p> : ''}
       </section>
       <section className='data-box'>
         <p>Rotation (degree):</p>
