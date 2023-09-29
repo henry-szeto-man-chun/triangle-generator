@@ -10,7 +10,7 @@ import RotationInput from './components/RotationInput';
 function App() {
   const [dpi, setDpi] = useState(300)
   const [angles, setAngles] = useState(Array<number>(3).fill(NaN))
-  const [lengths, setLengths] = useState(Array<number>(3).fill(NaN))
+  const [sides, setSides] = useState(Array<number>(3).fill(NaN))
   const [rotation, setRotation] = useState(0)
   const [triangle, setTriangle] = useState<Triangle | null>(null)
   const [errorMessage, setErrorMessage] = useState('')
@@ -27,17 +27,17 @@ function App() {
   }
 
   function handleAnglesChange(value: string, index: number) {
-    const nextAngles = angles.map((oldValue, i) => {
+    const nextAngles = angles.map((prevValue, i) => {
       if (i === index) {
         return parseFloat(value);
       } else {
-        return oldValue
+        return prevValue
       }
     })
 
     try {
-      createTriangle(nextAngles, lengths);
       setAngles(nextAngles);
+      createTriangle(nextAngles, sides);
       setErrorMessage('');
     } catch (error) {
       if (error instanceof TriangleDataError) {
@@ -49,17 +49,17 @@ function App() {
 
 
   function handleLengthsChange(value: string, index: number) {
-    const nextLengths = lengths.map((oldValue, i) => {
+    const nextSides = sides.map((prevValue, i) => {
       if (i === index) {
         return parseFloat(value);
       } else {
-        return oldValue
+        return prevValue
       }
     })
 
     try {
-      createTriangle(angles, nextLengths);
-      setLengths(nextLengths);
+      setSides(nextSides);
+      createTriangle(angles, nextSides);
       setErrorMessage('');
     } catch (error) {
       if (error instanceof TriangleDataError) {
@@ -105,7 +105,7 @@ function App() {
       <section className='input-section'>
         <p>Sides (cm):</p>
         <SidesInputGroup
-          getter={lengths}
+          getter={sides}
           handler={handleLengthsChange}
           triangle={triangle} />
       </section>

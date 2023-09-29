@@ -187,6 +187,17 @@ describe('sine rule', () => {
             expect(newSides[2]).toBeCloseTo(3)
         })
     })
+
+    describe('given invalid inputs', () => {
+        const angles=[40, NaN, NaN]
+        const sides=[3, 5, NaN]
+
+        test('error thrown', () => {
+            const f = () => rule.apply(angles, sides)
+
+            expect(f).toThrow(TriangleDataError)
+        })
+    })
 })
 
 describe('triangle factory create triangle', () => {

@@ -5,8 +5,8 @@ class TrianglePoints {
         this.points = points
     }
 
-    rotate(rotation: number) {
-        const rad = rotation * Math.PI / 180
+    rotate(rotationDegree: number) {
+        const rad = rotationDegree * Math.PI / 180
         const newPoints = this.points.map(([x, y]) => [
             x * Math.cos(rad) - y * Math.sin(rad),
             x * Math.sin(rad) + y * Math.cos(rad)

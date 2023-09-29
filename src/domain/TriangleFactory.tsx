@@ -158,9 +158,8 @@ class SineRule implements TriangleRule {
             }
             else if (isNaN(angles[i]) && !isNaN(sides[i])) {
                 const ratio = sides[i] / k;
-                const angle = (ratio > 1) ?
-                    1 / (Math.asin(1 / ratio) * 180 / Math.PI) :
-                    Math.asin(ratio) * 180 / Math.PI;
+                if (ratio > 1) throw new TriangleDataError("No valid triangle with these inputs.");
+                const angle = Math.asin(ratio) * 180 / Math.PI;
                 nextAngles[i] = angle;
             }
         }
