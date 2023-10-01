@@ -15,9 +15,6 @@ function App() {
   const [rotation, setRotation] = useState(0)
   const [triangle, setTriangle] = useState<Triangle | null>(null)
   const [errorMessage, setErrorMessage] = useState('')
-  const [labelA, setLabelA] = useState('A')
-  const [labelB, setLabelB] = useState('B')
-  const [labelC, setLabelC] = useState('C')
   const [labelData, setLabelData] = useState(triangleLabelData)
 
   useEffect(() => {
@@ -84,7 +81,7 @@ function App() {
     if (triangle === null || !triangle.isComplete()) return
 
     const drawer = new CanvasDrawer()
-    drawer.drawTriangle(triangle, rotation, dpi, [labelA, labelB, labelC], labelData)
+    drawer.drawTriangle(triangle, rotation, dpi, labelData)
   }
 
   return (

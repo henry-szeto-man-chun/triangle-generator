@@ -11,7 +11,7 @@ class CanvasDrawer {
         this.ctx = this.canvas.getContext('2d') as CanvasRenderingContext2D
     }
 
-    drawTriangle(triangle: Triangle, rotation: number, dpi: number, labels: string[], labelData: any) {
+    drawTriangle(triangle: Triangle, rotation: number, dpi: number, labelData: any) {
         let points = triangle.convertToPoints(this.dpiToLengthFactor(dpi))
             .rotate(rotation)
             .shift()
