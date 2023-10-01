@@ -5,20 +5,19 @@ import { roundToDecimal } from "../utils";
 function AnglesInputGroup({ getter, handler, triangle }: { getter: number[], handler: Function, triangle: Triangle | null }) {
     const labels = ['\u{03b1}: ', '\u{03b2}: ', '\u{03b3}: ']
     const inputs = labels.map((label, index) =>
-        <li className="input-wrapper" key={index}>
-            <AngleInput
-                label={label}
-                getter={getter}
-                index={index}
-                handler={handler}
-                triangle={triangle} />
-        </li>
+        <AngleInput
+            key={index}
+            label={label}
+            getter={getter}
+            index={index}
+            handler={handler}
+            triangle={triangle} />
     );
 
     return (
-        <ul className="input-group">
+        <div className="flex-container">
             {inputs}
-        </ul>
+        </div>
     )
 }
 
@@ -27,7 +26,7 @@ function AngleInput({ label, getter, index, handler, triangle }: { label: string
     const inferredValue = (triangle !== null) ? triangle.angles[index] : NaN
 
     return (
-        <>
+        <div className="input-wrapper">
             <label htmlFor={id}>{label}</label>
             <input
                 id={id}
@@ -41,27 +40,26 @@ function AngleInput({ label, getter, index, handler, triangle }: { label: string
                 max='180'
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => handler(e.currentTarget.value, index)}
             />
-        </>
+        </div>
     )
 }
 
 function SidesInputGroup({ getter, handler, triangle }: { getter: number[], handler: Function, triangle: Triangle | null }) {
     const labels = ['a: ', 'b: ', 'c: '];
     const inputs = labels.map((label, index) =>
-        <li className="input-wrapper" key={index}>
-            <SideInput
-                label={label}
-                getter={getter}
-                index={index}
-                handler={handler}
-                triangle={triangle} />
-        </li>
+        <SideInput
+            key={index}
+            label={label}
+            getter={getter}
+            index={index}
+            handler={handler}
+            triangle={triangle} />
     );
 
     return (
-        <ul className="input-group">
+        <div className="flex-container">
             {inputs}
-        </ul>
+        </div>
     )
 }
 
@@ -70,7 +68,7 @@ function SideInput({ label, getter, index, handler, triangle }: { label: string,
     const inferredValue = (triangle !== null) ? triangle.sides[index] : NaN
 
     return (
-        <>
+        <div className="input-wrapper">
             <label htmlFor={id}>{label}</label>
             <input
                 id={id}
@@ -83,7 +81,7 @@ function SideInput({ label, getter, index, handler, triangle }: { label: string,
                 min='0'
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => handler(e.currentTarget.value, index)}
             />
-        </>
+        </div>
     )
 }
 

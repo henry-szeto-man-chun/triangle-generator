@@ -96,39 +96,39 @@ function App() {
         Instructions: input angles and lengths of sides to generate an image, right click on image to save.
       </p>
 
-      <section className="input-section">
+      <section >
         <p>Angles (degree):</p>
         <AnglesInputGroup
           getter={angles}
           handler={handleAnglesChange}
           triangle={triangle} />
       </section>
-      <section className="input-section">
+      <section >
         <p>Sides (cm):</p>
         <SidesInputGroup
           getter={sides}
           handler={handleLengthsChange}
           triangle={triangle} />
       </section>
-      <section className="input-section">
+      <section>
         {errorMessage ? <p className="error-message">{errorMessage}</p> : ""}
       </section>
-      <section className="input-section">
+      <section>
         <p>Rotation (degree):</p>
         <RotationInput
           rotation={rotation}
           onRotationChange={handleRotationChange}
         />
       </section>
-      <section className="input-section">
+      <section>
         <p>Labels:</p>
-        <ul className="input-group">
-          <li className="input-wrapper"><TextInput prompt="&alpha;: " getter={labelA} setter={setLabelA} /></li>
-          <li className="input-wrapper"><TextInput prompt="&beta;: " getter={labelB} setter={setLabelB} /></li>
-          <li className="input-wrapper"><TextInput prompt="&gamma;: " getter={labelC} setter={setLabelC} /></li>
-        </ul>
+        <div className="flex-container">
+          <div className="input-wrapper"><TextInput prompt="&alpha;: " getter={labelA} setter={setLabelA} /></div>
+          <div className="input-wrapper"><TextInput prompt="&beta;: " getter={labelB} setter={setLabelB} /></div>
+          <div className="input-wrapper"><TextInput prompt="&gamma;: " getter={labelC} setter={setLabelC} /></div>
+        </div>
       </section>
-      <section className="input-section" style={{display: "none"}}>
+      <section className="input-section" style={{ display: "none" }}>
         <p>Angle labels:</p>
         <table>
           <thead>

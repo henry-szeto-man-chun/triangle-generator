@@ -2,18 +2,12 @@
   margin: 20px;
 }
 
-.input-section {
-  clear: both;
-}
-
-.input-group {
-  padding-inline-start: 5px;
+.flex-container {
+  display: flex;
 }
 
 .input-wrapper {
-  list-style-type: none;
   margin: 5px;
-  float: left;
 }
 
 .input-wide {
