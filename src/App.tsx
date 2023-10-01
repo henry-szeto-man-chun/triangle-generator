@@ -27,21 +27,18 @@ function App() {
 
   function handleAnglesChange(value: string, index: number) {
     const nextAngles = angles.map((prevValue, i) => {
-      if (i === index) {
-        return parseFloat(value);
-      } else {
-        return prevValue
-      }
+      if (i === index) return parseFloat(value);
+      else return prevValue;
     })
+    setAngles(nextAngles);
 
     try {
-      setAngles(nextAngles);
       createTriangle(nextAngles, sides);
       setErrorMessage('');
     } catch (error) {
       if (error instanceof TriangleDataError) {
         setErrorMessage(error.message);
-      }
+      } else throw error
     }
   }
 
@@ -49,21 +46,18 @@ function App() {
 
   function handleLengthsChange(value: string, index: number) {
     const nextSides = sides.map((prevValue, i) => {
-      if (i === index) {
-        return parseFloat(value);
-      } else {
-        return prevValue
-      }
+      if (i === index) return parseFloat(value);
+      else return prevValue;
     })
+    setSides(nextSides);
 
     try {
-      setSides(nextSides);
       createTriangle(angles, nextSides);
       setErrorMessage('');
     } catch (error) {
       if (error instanceof TriangleDataError) {
         setErrorMessage(error.message);
-      }
+      } else throw error
     }
   }
 
