@@ -1,3 +1,7 @@
+.App {
+  margin: 20px;
+}
+
 .input-section {
   clear: both;
 }
@@ -24,8 +28,12 @@
   width: 400px;
 }
 
-.App {
-  margin: 20px;
+.closed {
+  display: none;
+}
+
+.opened {
+  display: flex;
 }
 
 .error-message {

@@ -6,6 +6,7 @@ import { TriangleFactory, TriangleDataError } from './domain/TriangleFactory';
 import TextInput from './components/TextInput';
 import { AnglesInputGroup, SidesInputGroup } from './components/TriangleDataInput';
 import RotationInput from './components/RotationInput';
+import { AngleArcInput, AngleDegreeInput, AngleLabelInput } from './components/TriangleLabelInput';
 
 function App() {
   const [dpi, setDpi] = useState(300)
@@ -86,7 +87,7 @@ function App() {
   }
 
   return (
-    <div className='App'>
+    <div className="App">
       <h1>
         Triangle Generator
       </h1>
@@ -95,69 +96,67 @@ function App() {
         Instructions: input angles and lengths of sides to generate an image, right click on image to save.
       </p>
 
-      <section className='input-section'>
+      <section className="input-section">
         <p>Angles (degree):</p>
         <AnglesInputGroup
           getter={angles}
           handler={handleAnglesChange}
           triangle={triangle} />
       </section>
-      <section className='input-section'>
+      <section className="input-section">
         <p>Sides (cm):</p>
         <SidesInputGroup
           getter={sides}
           handler={handleLengthsChange}
           triangle={triangle} />
       </section>
-      <section className='input-section'>
-        {errorMessage ? <p className='error-message'>{errorMessage}</p> : ''}
+      <section className="input-section">
+        {errorMessage ? <p className="error-message">{errorMessage}</p> : ""}
       </section>
-      <section className='input-section'>
+      <section className="input-section">
         <p>Rotation (degree):</p>
         <RotationInput
           rotation={rotation}
           onRotationChange={handleRotationChange}
         />
       </section>
-      <section className='input-section'>
+      <section className="input-section">
         <p>Labels:</p>
-        <ul className='input-group'>
-          <li className='input-wrapper'><TextInput prompt='&alpha;: ' getter={labelA} setter={setLabelA} /></li>
-          <li className='input-wrapper'><TextInput prompt='&beta;: ' getter={labelB} setter={setLabelB} /></li>
-          <li className='input-wrapper'><TextInput prompt='&gamma;: ' getter={labelC} setter={setLabelC} /></li>
+        <ul className="input-group">
+          <li className="input-wrapper"><TextInput prompt="&alpha;: " getter={labelA} setter={setLabelA} /></li>
+          <li className="input-wrapper"><TextInput prompt="&beta;: " getter={labelB} setter={setLabelB} /></li>
+          <li className="input-wrapper"><TextInput prompt="&gamma;: " getter={labelC} setter={setLabelC} /></li>
         </ul>
       </section>
-      <section className='input-section'>
+      <section className="input-section" style={{display: "none"}}>
         <p>Angle labels:</p>
-        <table style={{ textAlign: 'center' }}>
+        <table>
           <thead>
             <tr>
-              <td></td><td>Arc</td><td>Degree</td><td>Label</td><td>Label Offset</td><td>Font Size</td>
+              <td></td><td>Arc</td><td>Degree</td><td>Label</td>
             </tr>
           </thead>
           <tbody>
             <tr>
               <td>&alpha;</td>
-              <td><input type='checkbox'></input></td>
-              <td><input type='checkbox'></input></td>
-              <td><input className='input-narrow' type='input'></input></td>
-              <td><input type='range'></input></td>
-              <td><input className='input-narrow' type='number'></input></td>
+              <td><AngleArcInput /></td>
+              <td><AngleDegreeInput /></td>
+              <td><AngleLabelInput /></td>
             </tr>
           </tbody>
         </table>
       </section>
-      <section className='input-section'>
+      <section className="input-section">
         <p>
-          <label htmlFor='dpiEle'>DPI: </label>
+          <label htmlFor="dpiEle">DPI: </label>
         </p>
         <input
-          id='dpiEle'
-          type='number'
+          id="dpiEle"
+          type="number"
           value={dpi}
           onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleDpiChange(e.currentTarget.value)} />
       </section>
-      <canvas id='myCanvas' width='400' height='400'></canvas>
+      <canvas id="myCanvas" width="400" height="400"></canvas>
     </div>
   );
 }
