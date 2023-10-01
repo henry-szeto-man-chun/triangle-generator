@@ -19,7 +19,7 @@
 }
 
 .slider {
-  width: 400px;
+  width: 335px;
 }
 
 .closed {
@@ -32,4 +32,8 @@
 
 .error-message {
   color: red;
+}
+
+.hidden {
+  display: none;
 }

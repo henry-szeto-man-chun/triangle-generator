@@ -3,10 +3,10 @@ import Triangle from './domain/Triangle';
 import CanvasDrawer from './CanvasDrawer';
 import './App.css';
 import { TriangleFactory, TriangleDataError } from './domain/TriangleFactory';
-import TextInput from './components/TextInput';
 import { AnglesInputGroup, SidesInputGroup } from './components/TriangleDataInput';
 import RotationInput from './components/RotationInput';
-import { AngleArcInput, AngleDegreeInput, AngleLabelInput } from './components/TriangleLabelInput';
+import AngleLabelsInputGroup from './components/TriangleLabelInput';
+import triangleLabelData from './domain/TriangleLabelData';
 
 function App() {
   const [dpi, setDpi] = useState(300)
@@ -18,6 +18,7 @@ function App() {
   const [labelA, setLabelA] = useState('A')
   const [labelB, setLabelB] = useState('B')
   const [labelC, setLabelC] = useState('C')
+  const [labelData, setLabelData] = useState(triangleLabelData)
 
   useEffect(() => {
     redrawTriangle();
@@ -83,7 +84,7 @@ function App() {
     if (triangle === null || !triangle.isComplete()) return
 
     const drawer = new CanvasDrawer()
-    drawer.drawTriangle(triangle, rotation, dpi, [labelA, labelB, labelC])
+    drawer.drawTriangle(triangle, rotation, dpi, [labelA, labelB, labelC], labelData)
   }
 
   return (
@@ -120,31 +121,9 @@ function App() {
           onRotationChange={handleRotationChange}
         />
       </section>
-      <section>
-        <p>Labels:</p>
-        <div className="flex-container">
-          <div className="input-wrapper"><TextInput prompt="&alpha;: " getter={labelA} setter={setLabelA} /></div>
-          <div className="input-wrapper"><TextInput prompt="&beta;: " getter={labelB} setter={setLabelB} /></div>
-          <div className="input-wrapper"><TextInput prompt="&gamma;: " getter={labelC} setter={setLabelC} /></div>
-        </div>
-      </section>
-      <section className="input-section" style={{ display: "none" }}>
+      <section className="input-section">
         <p>Angle labels:</p>
-        <table>
-          <thead>
-            <tr>
-              <td></td><td>Arc</td><td>Degree</td><td>Label</td>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>&alpha;</td>
-              <td><AngleArcInput /></td>
-              <td><AngleDegreeInput /></td>
-              <td><AngleLabelInput /></td>
-            </tr>
-          </tbody>
-        </table>
+        <AngleLabelsInputGroup labelData={labelData} setLabelData={setLabelData}></AngleLabelsInputGroup>
       </section>
       <section className="input-section">
         <p>

@@ -6,75 +6,90 @@ interface TriangleLabels {
 }
 
 class AngleLabels implements TriangleLabels {
-    constructor(private labels: string[], private fontPx: number) {
+    private incenterPoint: number[] = []
+    constructor(private labelData: any) {
 
     }
 
     draw(points: TrianglePoints, ctx: CanvasRenderingContext2D) {
-        const labelPoints = this.getLabelPoints(points)
+        this.incenterPoint = points.getIncenterPoint()
         ctx.textAlign = 'center'
         ctx.textBaseline = 'middle'
-        ctx.font = `${this.fontPx}px Arial`
-        ctx.fillText(this.labels[0], labelPoints[0][0], labelPoints[0][1])
-        ctx.fillText(this.labels[1], labelPoints[1][0], labelPoints[1][1])
-        ctx.fillText(this.labels[2], labelPoints[2][0], labelPoints[2][1])
+        points.points.forEach((point, index) => {
+            if ((this.labelData.angleLabel as boolean[])[index]) {
+                const labelPoint = this.getLabelPoint(points, index)
+                ctx.font = `${(this.labelData.angleLabelSize as number[])[index]}px Arial`
+                ctx.fillText((this.labelData.angleLabelText as string[])[index], labelPoint[0], labelPoint[1])
+            }
+        })
     }
 
-    private getLabelPoints(points: TrianglePoints) {
-        const center = points.getIncenterPoint()
-        const labelPoints = points.points.map(point => {
-            let distance = Math.sqrt((point[0] - center[0]) ** 2 + (point[1] - center[1]) ** 2)
-            let bearing = Math.atan2(point[0] - center[0], point[1] - center[1])
-            let labelDistance = distance + (this.fontPx * 1.1)
-            let pointX = center[0] + Math.sin(bearing) * labelDistance
-            let pointY = center[1] + Math.cos(bearing) * labelDistance
-            return [pointX, pointY]
-        })
-        return labelPoints
+    private getLabelPoint(points: TrianglePoints, index: number) {
+        const point = points.points[index]
+        const center = this.incenterPoint
+        const distance = Math.sqrt((point[0] - center[0]) ** 2 + (point[1] - center[1]) ** 2)
+        const bearing = Math.atan2(point[0] - center[0], point[1] - center[1])
+        const labelDistance = distance + (
+            (this.labelData.angleLabelSize as number[])[index] *
+            (this.labelData.angleLabelOffset as number[])[index]
+        )
+        const pointX = center[0] + Math.sin(bearing) * labelDistance
+        const pointY = center[1] + Math.cos(bearing) * labelDistance
+        return [pointX, pointY]
     }
 }
 
 class AngleArcs implements TriangleLabels {
-    constructor(private radius: number) {
+    constructor(private labelData: any) {
 
     }
 
     draw(points: TrianglePoints, ctx: CanvasRenderingContext2D) {
         points.points.forEach((point, index) => {
-            const [sAngle, eAngle] = points.getStartEndAngles(index)
-            ctx.beginPath();
-            ctx.arc(point[0], point[1], this.radius, sAngle, eAngle);
-            ctx.stroke();
+            if ((this.labelData.angleArc as boolean[])[index]) {
+                const [sAngle, eAngle] = points.getStartEndAngles(index)
+                ctx.beginPath();
+                ctx.arc(point[0], point[1], (this.labelData.angleArcRadius as number[])[index], sAngle, eAngle);
+                ctx.stroke();
+            }
         })
     }
 }
 
 class AngleDegrees implements TriangleLabels {
-    constructor(private angles: number[], private arcRadius: number, private fontPx: number) {
+    private incenterPoint: number[] = []
+    constructor(private angles: number[], private labelData: any) {
 
     }
 
     draw(points: TrianglePoints, ctx: CanvasRenderingContext2D): void {
-        const labelPoints = this.getLabelPoints(points)
+        this.incenterPoint = points.getIncenterPoint()
         ctx.textAlign = 'center'
         ctx.textBaseline = 'middle'
-        ctx.font = `${this.fontPx}px Arial`
-        ctx.fillText(roundToDecimal(this.angles[0], 2).toString() + "\u00B0", labelPoints[0][0], labelPoints[0][1])
-        ctx.fillText(roundToDecimal(this.angles[1], 2).toString() + "\u00B0", labelPoints[1][0], labelPoints[1][1])
-        ctx.fillText(roundToDecimal(this.angles[2], 2).toString() + "\u00B0", labelPoints[2][0], labelPoints[2][1])
+        points.points.forEach((point, index) => {
+            if ((this.labelData.angleDegree as boolean[])[index]) {
+                const labelPoint = this.getLabelPoint(points, index)
+                ctx.font = `${(this.labelData.angleDegreeSize as number[])[index]}px Arial`
+                ctx.fillText(roundToDecimal(this.angles[index], 2).toString() + "\u00B0", labelPoint[0], labelPoint[1])
+            }
+        })
     }
 
-    private getLabelPoints(points: TrianglePoints) {
-        const center = points.getIncenterPoint()
-        const labelPoints = points.points.map(point => {
-            let distance = Math.sqrt((point[0] - center[0]) ** 2 + (point[1] - center[1]) ** 2)
-            let bearing = Math.atan2(point[0] - center[0], point[1] - center[1])
-            let labelDistance = distance - ((this.arcRadius + this.fontPx) * 1.1)
-            let pointX = center[0] + Math.sin(bearing) * labelDistance
-            let pointY = center[1] + Math.cos(bearing) * labelDistance
-            return [pointX, pointY]
-        })
-        return labelPoints
+    private getLabelPoint(points: TrianglePoints, index: number) {
+        const point = points.points[index]
+        const center = this.incenterPoint
+        const distance = Math.sqrt((point[0] - center[0]) ** 2 + (point[1] - center[1]) ** 2)
+        const bearing = Math.atan2(point[0] - center[0], point[1] - center[1])
+        const labelDistance = distance + (
+            (
+                (this.labelData.angleArcRadius as number[])[index] +
+                (this.labelData.angleDegreeSize as number[])[index]
+            ) *
+            (this.labelData.angleDegreeOffset as number[])[index]
+        )
+        const pointX = center[0] + Math.sin(bearing) * labelDistance
+        const pointY = center[1] + Math.cos(bearing) * labelDistance
+        return [pointX, pointY]
     }
 }
 

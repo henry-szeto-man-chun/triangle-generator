@@ -11,14 +11,14 @@ class CanvasDrawer {
         this.ctx = this.canvas.getContext('2d') as CanvasRenderingContext2D
     }
 
-    drawTriangle(triangle: Triangle, rotation: number, dpi: number, labels: string[]) {
+    drawTriangle(triangle: Triangle, rotation: number, dpi: number, labels: string[], labelData: any) {
         let points = triangle.convertToPoints(this.dpiToLengthFactor(dpi))
             .rotate(rotation)
             .shift()
         this.drawPoints(points)
-        new AngleLabels(labels, 20).draw(points, this.ctx)
-        new AngleArcs(20).draw(points, this.ctx)
-        new AngleDegrees(triangle.angles, 20, 16).draw(points, this.ctx)
+        new AngleArcs(labelData).draw(points, this.ctx)
+        new AngleDegrees(triangle.angles, labelData).draw(points, this.ctx)
+        new AngleLabels(labelData).draw(points, this.ctx)
         new SideLabels(['a', 'b', 'c'], 20).draw(points, this.ctx)
     }
 
