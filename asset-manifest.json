@@ -1,15 +1,15 @@
 {
   "files": {
-    "main.css": "/triangle-generator/static/css/main.efe7c5cc.css",
-    "main.js": "/triangle-generator/static/js/main.ae3c170d.js",
+    "main.css": "/triangle-generator/static/css/main.1300aebb.css",
+    "main.js": "/triangle-generator/static/js/main.c17af9ae.js",
     "static/js/787.c82e5fcc.chunk.js": "/triangle-generator/static/js/787.c82e5fcc.chunk.js",
     "index.html": "/triangle-generator/index.html",
-    "main.efe7c5cc.css.map": "/triangle-generator/static/css/main.efe7c5cc.css.map",
-    "main.ae3c170d.js.map": "/triangle-generator/static/js/main.ae3c170d.js.map",
+    "main.1300aebb.css.map": "/triangle-generator/static/css/main.1300aebb.css.map",
+    "main.c17af9ae.js.map": "/triangle-generator/static/js/main.c17af9ae.js.map",
     "787.c82e5fcc.chunk.js.map": "/triangle-generator/static/js/787.c82e5fcc.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.efe7c5cc.css",
-    "static/js/main.ae3c170d.js"
+    "static/css/main.1300aebb.css",
+    "static/js/main.c17af9ae.js"
   ]
 }
