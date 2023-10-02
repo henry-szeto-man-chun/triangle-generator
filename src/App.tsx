@@ -80,14 +80,13 @@ function App() {
 
   return (
     <div className="App">
+      <div className="control-panel">
       <h1>
         Triangle Generator
       </h1>
-
       <p>
         Instructions: input angles and lengths of sides to generate an image, right click on image to save.
       </p>
-
       <section >
         <p>Angles (degree):</p>
         <AnglesInputGroup
@@ -126,7 +125,10 @@ function App() {
           value={dpi}
           onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleDpiChange(e.currentTarget.value)} />
       </section>
+      </div>
+      <div className="display-panel">
       <canvas id="myCanvas" width="400" height="400"></canvas>
+      </div>
     </div>
   );
 }

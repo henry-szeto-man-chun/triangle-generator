@@ -1,46 +1,46 @@
 import { ReactNode, useId, useState } from "react"
 
 function AngleLabelsInputGroup({ labelData, setLabelData }: { labelData: any, setLabelData: React.Dispatch<React.SetStateAction<any>> }) {
-    const angleNames = ['\u{03b1}:', '\u{03b2}:', '\u{03b3}:']
+    const angleNames = ['\u{03b1}', '\u{03b2}', '\u{03b3}']
     const inputs = angleNames.map((name, index) =>
-        <tr key={index}>
-            <td>{name}</td>
-            <td><AngleArcInput labelData={labelData} setLabelData={setLabelData} index={index} /></td>
-            <td><AngleDegreeInput labelData={labelData} setLabelData={setLabelData} index={index} /></td>
-            <td><AngleTextInput labelData={labelData} setLabelData={setLabelData} index={index} /></td>
-        </tr>
+        <>
+            <div>{name}</div>
+            <AngleArcInput labelData={labelData} setLabelData={setLabelData} index={index} />
+            <AngleDegreeInput labelData={labelData} setLabelData={setLabelData} index={index} />
+            <AngleTextInput labelData={labelData} setLabelData={setLabelData} index={index} />
+        </>
     );
 
     return (
-        <table>
-            <thead>
-                <tr>
-                    <td></td><td>Arc</td><td>Degree</td><td>Label</td>
-                </tr>
-            </thead>
-            <tbody>
-                {inputs}
-            </tbody>
-        </table>
+        <div className="label-grid">
+            <span></span>
+            <span className="grid-main">Arc</span>
+            <span className="grid-sub">Radius</span>
+            <span className="grid-main">Degree</span>
+            <span className="grid-sub">Size</span>
+            <span className="grid-sub">Offset</span>
+            <span className="grid-main">Label</span>
+            <span className="grid-sub">Text</span>
+            <span className="grid-sub">Size</span>
+            <span className="grid-sub">Offset</span>
+            {inputs}
+        </div>
     )
 }
 
 function InputWrapper({ isChecked, onCheck, children }: { isChecked: boolean, onCheck: Function, children: ReactNode }) {
-    const [isOpen, setIsOpen] = useState(isChecked)
 
     function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
         onCheck(e.currentTarget.checked)
-        setIsOpen(e.currentTarget.checked)
     }
 
     return (
-        <div style={{ display: "flex" }}>
-            <input type="checkbox" checked={isChecked} onChange={handleChange}></input>
-            <div className={isOpen ? "foldable opened" : "foldable closed"}>
-                {children}
+        <>
+            <div className="grid-main">
+                <input type="checkbox" checked={isChecked} onChange={handleChange} />
             </div>
-            <button className={isChecked ? "" : "hidden"} onClick={() => setIsOpen(!isOpen)}>{isOpen ? "<" : "\u2026"}</button>
-        </div>
+            {children}
+        </>
     )
 }
 
@@ -71,14 +71,13 @@ function AngleArcInput({ labelData, setLabelData, index }: { labelData: any, set
         <InputWrapper
             isChecked={(labelData.angleArc as boolean[])[index]}
             onCheck={handleCheck}>
-            <label htmlFor={id}>Radius: </label>
-            <input
-                id={id}
-                className="input-narrow"
-                type="number"
-                value={(labelData.angleArcRadius as number[])[index].toString()}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleRadiusChange(e.currentTarget.value)}
-            />
+                <div><input
+                    id={id}
+                    className="grid-input"
+                    type="number"
+                    value={(labelData.angleArcRadius as number[])[index].toString()}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleRadiusChange(e.currentTarget.value)}
+                /></div>
         </InputWrapper>
     )
 }
@@ -121,25 +120,24 @@ function AngleDegreeInput({ labelData, setLabelData, index }: { labelData: any, 
         <InputWrapper
             isChecked={(labelData.angleDegree as boolean[])[index]}
             onCheck={handleCheck}>
-            <label htmlFor={id1}>Size: </label>
-            <input
+            <div><input
                 id={id1}
-                className="input-narrow"
+                className="grid-input"
                 type="number"
                 min={1}
                 value={(labelData.angleDegreeSize as number[])[index].toString()}
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleSizeChange(e.currentTarget.value)}
-            />
-            <label htmlFor={id2}>Offset: </label>
-            <input
+            /></div>
+            <div><input
                 id={id2}
                 type="range"
-                min={-2.0}
+                className="grid-input"
+                min={-2.5}
                 max={2.0}
-                step={0.1}
+                step={0.05}
                 value={(labelData.angleDegreeOffset as number[])[index]}
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleOffsetChange(e.currentTarget.value)}
-            />
+            /></div>
         </InputWrapper>
     )
 }
@@ -193,33 +191,31 @@ function AngleTextInput({ labelData, setLabelData, index }: { labelData: any, se
         <InputWrapper
             isChecked={(labelData.angleLabel as boolean[])[index]}
             onCheck={handleCheck}>
-            <label htmlFor={id1}>Text: </label>
-            <input
+            <div><input
                 id={id1}
-                className="input-narrow"
+                className="grid-input"
                 type="text"
                 value={(labelData.angleLabelText as string[])[index]}
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleTextChange(e.currentTarget.value)}
-            />
-            <label htmlFor={id2}>Size: </label>
-            <input
+            /></div>
+            <div><input
                 id={id2}
-                className="input-narrow"
+                className="grid-input"
                 type="number"
                 min={1}
                 value={(labelData.angleLabelSize as number[])[index].toString()}
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleSizeChange(e.currentTarget.value)}
-            />
-            <label htmlFor={id3}>Offset: </label>
-            <input
+            /></div>
+            <div><input
                 id={id3}
                 type="range"
-                min={-2.0}
+                className="grid-input"
+                min={-2.5}
                 max={2.0}
-                step={0.1}
+                step={0.05}
                 value={(labelData.angleLabelOffset as number[])[index]}
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleOffsetChange(e.currentTarget.value)}
-            />
+            /></div>
         </InputWrapper>
     )
 }
