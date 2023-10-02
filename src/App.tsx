@@ -16,10 +16,18 @@ function App() {
   const [triangle, setTriangle] = useState<Triangle | null>(null)
   const [errorMessage, setErrorMessage] = useState('')
   const [labelData, setLabelData] = useState(triangleLabelData)
+  const [tabsOpen, setTabsOpen] = useState([true, false])
 
   useEffect(() => {
     redrawTriangle();
   })
+
+  function handleTabToggle(index: number) {
+    setTabsOpen(tabsOpen.map((prevValue, i) => {
+      if (i === index) return !prevValue
+      else return prevValue
+    }))
+  }
 
   function handleDpiChange(value: string) {
     setDpi(parseFloat(value));
@@ -42,8 +50,6 @@ function App() {
     }
   }
 
-
-
   function handleLengthsChange(value: string, index: number) {
     const nextSides = sides.map((prevValue, i) => {
       if (i === index) return parseFloat(value);
@@ -61,73 +67,81 @@ function App() {
     }
   }
 
-  function createTriangle(nextAngles: number[], nextLengths: number[]) {
-    const triangleFactory = new TriangleFactory();
-    const triangle = triangleFactory.createFromPartialAnglesAndLengths(nextAngles, nextLengths);
-    setTriangle(triangle);
-  }
-
   function handleRotationChange(value: string) {
     setRotation(parseFloat(value))
   }
 
-  function redrawTriangle() {
-    if (triangle === null || !triangle.isComplete()) return
+  function createTriangle(nextAngles: number[], nextLengths: number[]) {
+    const triangleFactory = new TriangleFactory();
+    const triangle = triangleFactory.createFromPartialAnglesAndLengths(nextAngles, nextLengths);
 
-    const drawer = new CanvasDrawer()
-    drawer.drawTriangle(triangle, rotation, dpi, labelData)
+    if (triangle.isComplete()) {
+      setTabsOpen(tabsOpen.map((prevValue, index) => {
+        if (index === 1) return true;
+        else return prevValue;
+      }));
+    }
+
+    setTriangle(triangle);
+  }
+  function redrawTriangle() {
+    if (triangle === null || !triangle.isComplete()) return;
+
+
+    const drawer = new CanvasDrawer();
+    drawer.drawTriangle(triangle, rotation, dpi, labelData);
   }
 
   return (
     <div className="App">
       <div className="control-panel">
-      <h1>
-        Triangle Generator
-      </h1>
-      <p>
-        Instructions: input angles and lengths of sides to generate an image, right click on image to save.
-      </p>
-      <section >
-        <p>Angles (degree):</p>
-        <AnglesInputGroup
-          getter={angles}
-          handler={handleAnglesChange}
-          triangle={triangle} />
-      </section>
-      <section >
-        <p>Sides (cm):</p>
-        <SidesInputGroup
-          getter={sides}
-          handler={handleLengthsChange}
-          triangle={triangle} />
-      </section>
-      <section>
-        {errorMessage ? <p className="error-message">{errorMessage}</p> : ""}
-      </section>
-      <section>
-        <p>Rotation (degree):</p>
-        <RotationInput
-          rotation={rotation}
-          onRotationChange={handleRotationChange}
-        />
-      </section>
-      <section className="input-section">
-        <p>Angle labels:</p>
-        <AngleLabelsInputGroup labelData={labelData} setLabelData={setLabelData}></AngleLabelsInputGroup>
-      </section>
-      <section className="input-section">
-        <p>
-          <label htmlFor="dpiEle">DPI: </label>
-        </p>
-        <input
-          id="dpiEle"
-          type="number"
-          value={dpi}
-          onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleDpiChange(e.currentTarget.value)} />
-      </section>
+        <h1>
+          Triangle Generator
+        </h1>
+        <section >
+          <h2 className={"toggle " + (tabsOpen[0] ? "open" : "")} onClick={() => handleTabToggle(0)}>Basic</h2>
+          <div className={tabsOpen[0] ? "" : "hidden"}>
+            <p>
+              Input angles and lengths of sides to generate an image; right click on image to save.
+            </p>
+            <p>Angles (degree):</p>
+            <AnglesInputGroup
+              getter={angles}
+              handler={handleAnglesChange}
+              triangle={triangle} />
+            <p>Sides (cm):</p>
+            <SidesInputGroup
+              getter={sides}
+              handler={handleLengthsChange}
+              triangle={triangle} />
+            {errorMessage ? <p className="error-message">{errorMessage}</p> : ""}
+            <p>Rotation (degree):</p>
+            <RotationInput
+              rotation={rotation}
+              onRotationChange={handleRotationChange}
+            />
+          </div>
+        </section>
+        <section>
+          <h2 className={"toggle " + (tabsOpen[1] ? "open" : "")} onClick={() => handleTabToggle(1)}>Labels</h2>
+          <div className={tabsOpen[1] ? "" : "hidden"}>
+            <p>Angle labels:</p>
+            <AngleLabelsInputGroup labelData={labelData} setLabelData={setLabelData}></AngleLabelsInputGroup>
+          </div>
+        </section>
+        <section>
+          <p>
+            <label htmlFor="dpiEle">DPI: </label>
+          </p>
+          <input
+            id="dpiEle"
+            type="number"
+            value={dpi}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleDpiChange(e.currentTarget.value)} />
+        </section>
       </div>
       <div className="display-panel">
-      <canvas id="myCanvas" width="400" height="400"></canvas>
+        <canvas id="myCanvas" width="400" height="400"></canvas>
       </div>
     </div>
   );

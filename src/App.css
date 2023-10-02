@@ -13,9 +13,30 @@
   background-color: lightgrey;
   padding: 5px;
 }
+
 h1 {
   font-size: 150%;
   margin: 10px 0px;
+}
+
+h2.toggle {
+  font-size: 120%;
+  background-color: lightslategray;
+  margin: 10px 0px;
+}
+
+h2.toggle:before {
+  display: inline-block;
+  content: "\2023";
+  margin: 0 0.5em;
+}
+
+h2.toggle.open:before {
+  -webkit-transform: rotate(90deg);
+  -moz-transform: rotate(90deg);
+  -o-transform: rotate(90deg);
+  -ms-transform: rotate(90deg);
+  transform: rotate(90deg);
 }
 
 p {
@@ -31,9 +52,6 @@ p {
   justify-items: center;
 }
 
-.flex-container {
-  display: flex;
-}
 
 .horizontal-flex {
   display: flex;
@@ -76,14 +94,6 @@ p {
   width: 150px;
 }
 
-.closed {
-  display: none;
-}
-
-.opened {
-  display: flex;
-}
-
 .error-message {
   color: red;
 }
@@ -93,7 +103,7 @@ p {
 }
 
 .grid-main {
-  background-color: lightslategray;
+  background-color: lightblue;
 }
 
 span.grid-sub {

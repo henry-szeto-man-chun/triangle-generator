@@ -15,7 +15,7 @@ function AnglesInputGroup({ getter, handler, triangle }: { getter: number[], han
     );
 
     return (
-        <div className="flex-container">
+        <div className="horizontal-flex">
             {inputs}
         </div>
     )
@@ -57,7 +57,7 @@ function SidesInputGroup({ getter, handler, triangle }: { getter: number[], hand
     );
 
     return (
-        <div className="flex-container">
+        <div className="horizontal-flex">
             {inputs}
         </div>
     )
