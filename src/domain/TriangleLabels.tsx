@@ -1,7 +1,7 @@
 import { roundToDecimal } from "../utils";
 import TrianglePoints from "./TrianglePoints";
 
-interface TriangleLabels {
+export interface TriangleLabels {
     draw(points: TrianglePoints, ctx: CanvasRenderingContext2D): void;
 }
 
@@ -15,13 +15,13 @@ class AngleLabels implements TriangleLabels {
         this.incenterPoint = points.getIncenterPoint()
         ctx.textAlign = 'center'
         ctx.textBaseline = 'middle'
-        points.points.forEach((point, index) => {
-            if ((this.labelData.angleLabel as boolean[])[index]) {
-                const labelPoint = this.getLabelPoint(points, index)
-                ctx.font = `${(this.labelData.angleLabelSize as number[])[index]}px Arial`
-                ctx.fillText((this.labelData.angleLabelText as string[])[index], labelPoint[0], labelPoint[1])
+        for(let i=0; i<3; i++) {
+            if ((this.labelData.angleLabel as boolean[])[i]) {
+                const labelPoint = this.getLabelPoint(points, i)
+                ctx.font = `${(this.labelData.angleLabelSize as number[])[i]}px Arial`
+                ctx.fillText((this.labelData.angleLabelText as string[])[i], labelPoint[0], labelPoint[1])
             }
-        })
+        }
     }
 
     private getLabelPoint(points: TrianglePoints, index: number) {
@@ -66,13 +66,13 @@ class AngleDegrees implements TriangleLabels {
         this.incenterPoint = points.getIncenterPoint()
         ctx.textAlign = 'center'
         ctx.textBaseline = 'middle'
-        points.points.forEach((point, index) => {
-            if ((this.labelData.angleDegree as boolean[])[index]) {
-                const labelPoint = this.getLabelPoint(points, index)
-                ctx.font = `${(this.labelData.angleDegreeSize as number[])[index]}px Arial`
-                ctx.fillText(roundToDecimal(this.angles[index], 2).toString() + "\u00B0", labelPoint[0], labelPoint[1])
+        for(let i=0; i<3; i++) {
+            if ((this.labelData.angleDegree as boolean[])[i]) {
+                const labelPoint = this.getLabelPoint(points, i)
+                ctx.font = `${(this.labelData.angleDegreeSize as number[])[i]}px Arial`
+                ctx.fillText(roundToDecimal(this.angles[i], 2).toString() + "\u00B0", labelPoint[0], labelPoint[1])
             }
-        })
+        }
     }
 
     private getLabelPoint(points: TrianglePoints, index: number) {
@@ -94,31 +94,36 @@ class AngleDegrees implements TriangleLabels {
 }
 
 class SideLabels implements TriangleLabels {
-    constructor(private labels: string[], private fontPx: number) {
+    constructor(private labelData: any) {
 
     }
 
     draw(points: TrianglePoints, ctx: CanvasRenderingContext2D): void {
-        const labelPoints = this.getLabelPoints(points)
         ctx.textAlign = 'center'
         ctx.textBaseline = 'middle'
-        ctx.font = `${this.fontPx}px Arial`
-        ctx.fillText(this.labels[0], labelPoints[0][0], labelPoints[0][1])
-        ctx.fillText(this.labels[1], labelPoints[1][0], labelPoints[1][1])
-        ctx.fillText(this.labels[2], labelPoints[2][0], labelPoints[2][1])
+        for(let i=0; i<3; i++) {
+            if ((this.labelData.sideLabel as boolean[])[i]) {
+                const labelPoint = this.getLabelPoint(points, i)
+                ctx.font = `${(this.labelData.sideLabelSize as number[])[i]}px Arial`
+                ctx.fillText((this.labelData.sideLabelText as string[])[i], labelPoint[0], labelPoint[1])
+            }
+        }
     }
 
-    private getLabelPoints(points: TrianglePoints) {
-        const middle = points.getMiddlePoint()
-        const labelPoints = points.getBisectorPoints().map(point => {
-            let distance = Math.sqrt((point[0] - middle[0]) ** 2 + (point[1] - middle[1]) ** 2)
-            let bearing = Math.atan2(point[0] - middle[0], point[1] - middle[1])
-            let labelDistance = distance + (this.fontPx * 1.1)
-            let pointX = middle[0] + Math.sin(bearing) * labelDistance
-            let pointY = middle[1] + Math.cos(bearing) * labelDistance
-            return [pointX, pointY]
-        })
-        return labelPoints
+    private getLabelPoint(points: TrianglePoints, index: number) {
+        const [start, end] = points.getOppositeLine(index);
+        const midpoint = [
+            (start[0] + end[0]) / 2,
+            (start[1] + end[1]) / 2
+        ];
+        const perpendicularBearing = Math.atan2(midpoint[1] - start[1], -(midpoint[0] - start[0]))
+        const labelDistance = (
+            (this.labelData.sideLabelSize as number[])[index] * 
+            (this.labelData.sideLabelOffset as number[])[index]
+        )
+        const pointX = midpoint[0] + Math.sin(perpendicularBearing) * labelDistance
+        const pointY = midpoint[1] + Math.cos(perpendicularBearing) * labelDistance
+        return [pointX, pointY]
     }
 }
 

@@ -70,15 +70,12 @@ class TrianglePoints {
         else return result;
     }
 
-    getBisectorPoints() {
-        const result = [0, 1, 2].map(index => {
-            let indices = [0, 1, 2].filter(x => x !== index)
-            return [
-                (this.points[indices[0]][0] + this.points[indices[1]][0]) / 2,
-                (this.points[indices[0]][1] + this.points[indices[1]][1]) / 2
-            ]
-        })
-        return result
+    getOppositeLine(index: number) {
+        let indices = [0, 1, 2]
+        while (indices[0] !== index) {
+            indices.push(indices.shift() as number)
+        }
+        return [this.points[indices[1]], this.points[indices[2]]]
     }
 
     getMinXY() {

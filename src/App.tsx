@@ -5,7 +5,7 @@ import './App.css';
 import { TriangleFactory, TriangleDataError } from './domain/TriangleFactory';
 import { AnglesInputGroup, SidesInputGroup } from './components/TriangleDataInput';
 import RotationInput from './components/RotationInput';
-import AngleLabelsInputGroup from './components/TriangleLabelInput';
+import {AngleLabelsInputGroup, SideLabelsInputGroup} from './components/TriangleLabelInput';
 import triangleLabelData from './domain/TriangleLabelData';
 
 function App() {
@@ -127,6 +127,8 @@ function App() {
           <div className={tabsOpen[1] ? "" : "hidden"}>
             <p>Angle labels:</p>
             <AngleLabelsInputGroup labelData={labelData} setLabelData={setLabelData}></AngleLabelsInputGroup>
+            <p>Side labels:</p>
+            <SideLabelsInputGroup labelData={labelData} setLabelData={setLabelData}></SideLabelsInputGroup>
           </div>
         </section>
         <section>

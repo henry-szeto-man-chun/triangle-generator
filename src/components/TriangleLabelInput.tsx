@@ -5,27 +5,48 @@ function AngleLabelsInputGroup({ labelData, setLabelData }: { labelData: any, se
     const inputs = angleNames.map((name, index) =>
         <>
             <div>{name}</div>
+            <AngleTextInput labelData={labelData} setLabelData={setLabelData} index={index} />
             <AngleArcInput labelData={labelData} setLabelData={setLabelData} index={index} />
             <AngleDegreeInput labelData={labelData} setLabelData={setLabelData} index={index} />
-            <AngleTextInput labelData={labelData} setLabelData={setLabelData} index={index} />
         </>
     );
 
     return (
-        <div className="label-grid">
+        <div className="label-grid angle">
             <span></span>
+            <span className="grid-main">Label</span>
+            <span className="grid-sub">Text</span>
+            <span className="grid-sub">Size</span>
+            <span className="grid-sub">Offset</span>
             <span className="grid-main">Arc</span>
-            <span className="grid-sub">Radius</span>
+            <span className="grid-sub">Size</span>
             <span className="grid-main">Degree</span>
             <span className="grid-sub">Size</span>
             <span className="grid-sub">Offset</span>
+            {inputs}
+        </div>
+    )
+}
+
+function SideLabelsInputGroup({ labelData, setLabelData }: { labelData: any, setLabelData: React.Dispatch<React.SetStateAction<any>> }) {
+    const sideNames = ['a', 'b', 'c']
+    const inputs = sideNames.map((name, index) =>
+        <>
+            <div>{name}</div>
+            <SideTextInput labelData={labelData} setLabelData={setLabelData} index={index} />
+        </>
+    );
+
+    return (
+        <div className="label-grid side">
+            <span></span>
             <span className="grid-main">Label</span>
             <span className="grid-sub">Text</span>
             <span className="grid-sub">Size</span>
             <span className="grid-sub">Offset</span>
             {inputs}
         </div>
-    )
+    );
 }
 
 function InputWrapper({ isChecked, onCheck, children }: { isChecked: boolean, onCheck: Function, children: ReactNode }) {
@@ -45,7 +66,6 @@ function InputWrapper({ isChecked, onCheck, children }: { isChecked: boolean, on
 }
 
 function AngleArcInput({ labelData, setLabelData, index }: { labelData: any, setLabelData: React.Dispatch<React.SetStateAction<any>>, index: number }) {
-    const id = useId()
 
     function handleCheck(checked: boolean) {
         setLabelData({
@@ -71,20 +91,17 @@ function AngleArcInput({ labelData, setLabelData, index }: { labelData: any, set
         <InputWrapper
             isChecked={(labelData.angleArc as boolean[])[index]}
             onCheck={handleCheck}>
-                <div><input
-                    id={id}
-                    className="grid-input"
-                    type="number"
-                    value={(labelData.angleArcRadius as number[])[index].toString()}
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleRadiusChange(e.currentTarget.value)}
-                /></div>
+            <div><input
+                className="grid-input"
+                type="number"
+                value={(labelData.angleArcRadius as number[])[index].toString()}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleRadiusChange(e.currentTarget.value)}
+            /></div>
         </InputWrapper>
     )
 }
 
 function AngleDegreeInput({ labelData, setLabelData, index }: { labelData: any, setLabelData: React.Dispatch<React.SetStateAction<any>>, index: number }) {
-    const id1 = useId()
-    const id2 = useId()
 
     function handleCheck(checked: boolean) {
         setLabelData({
@@ -121,7 +138,6 @@ function AngleDegreeInput({ labelData, setLabelData, index }: { labelData: any, 
             isChecked={(labelData.angleDegree as boolean[])[index]}
             onCheck={handleCheck}>
             <div><input
-                id={id1}
                 className="grid-input"
                 type="number"
                 min={1}
@@ -129,7 +145,6 @@ function AngleDegreeInput({ labelData, setLabelData, index }: { labelData: any, 
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleSizeChange(e.currentTarget.value)}
             /></div>
             <div><input
-                id={id2}
                 type="range"
                 className="grid-input"
                 min={-2.5}
@@ -143,9 +158,6 @@ function AngleDegreeInput({ labelData, setLabelData, index }: { labelData: any, 
 }
 
 function AngleTextInput({ labelData, setLabelData, index }: { labelData: any, setLabelData: React.Dispatch<React.SetStateAction<any>>, index: number }) {
-    const id1 = useId()
-    const id2 = useId()
-    const id3 = useId()
 
     function handleCheck(checked: boolean) {
         setLabelData({
@@ -192,14 +204,12 @@ function AngleTextInput({ labelData, setLabelData, index }: { labelData: any, se
             isChecked={(labelData.angleLabel as boolean[])[index]}
             onCheck={handleCheck}>
             <div><input
-                id={id1}
                 className="grid-input"
                 type="text"
                 value={(labelData.angleLabelText as string[])[index]}
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleTextChange(e.currentTarget.value)}
             /></div>
             <div><input
-                id={id2}
                 className="grid-input"
                 type="number"
                 min={1}
@@ -207,7 +217,6 @@ function AngleTextInput({ labelData, setLabelData, index }: { labelData: any, se
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleSizeChange(e.currentTarget.value)}
             /></div>
             <div><input
-                id={id3}
                 type="range"
                 className="grid-input"
                 min={-2.5}
@@ -217,7 +226,82 @@ function AngleTextInput({ labelData, setLabelData, index }: { labelData: any, se
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleOffsetChange(e.currentTarget.value)}
             /></div>
         </InputWrapper>
-    )
+    );
 }
 
-export default AngleLabelsInputGroup
+function SideTextInput({ labelData, setLabelData, index }: { labelData: any, setLabelData: React.Dispatch<React.SetStateAction<any>>, index: number }) {
+    
+    function handleCheck(checked: boolean) {
+        setLabelData({
+            ...labelData,
+            sideLabel: (labelData.sideLabel as boolean[]).map((prevValue, i) => {
+                if (i === index) return checked;
+                else return prevValue;
+            })
+        });
+    }
+
+    function handleTextChange(text: string) {
+        setLabelData({
+            ...labelData,
+            sideLabelText: (labelData.sideLabelText as number[]).map((prevValue, i) => {
+                if (i === index) return text;
+                else return prevValue;
+            })
+        });
+    }
+
+    function handleSizeChange(size: string) {
+        setLabelData({
+            ...labelData,
+            sideLabelSize: (labelData.sideLabelSize as number[]).map((prevValue, i) => {
+                if (i === index) return parseFloat(size);
+                else return prevValue;
+            })
+        });
+    }
+
+    function handleOffsetChange(offset: string) {
+        setLabelData({
+            ...labelData,
+            sideLabelOffset: (labelData.sideLabelOffset as number[]).map((prevValue, i) => {
+                if (i === index) return parseFloat(offset);
+                else return prevValue;
+            })
+        });
+    }
+
+    return (
+        <InputWrapper
+            isChecked={(labelData.sideLabel as boolean[])[index]}
+            onCheck={handleCheck}>
+            <div><input
+                className="grid-input"
+                type="text"
+                value={(labelData.sideLabelText as string[])[index]}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleTextChange(e.currentTarget.value)}
+            /></div>
+            <div><input
+                className="grid-input"
+                type="number"
+                min={1}
+                value={(labelData.sideLabelSize as number[])[index].toString()}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleSizeChange(e.currentTarget.value)}
+            /></div>
+            <div><input
+                type="range"
+                className="grid-input"
+                min={-2.5}
+                max={2.0}
+                step={0.05}
+                value={(labelData.sideLabelOffset as number[])[index]}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleOffsetChange(e.currentTarget.value)}
+            /></div>
+        </InputWrapper>
+    );
+}
+
+export {
+    AngleLabelsInputGroup,
+    SideLabelsInputGroup
+}
