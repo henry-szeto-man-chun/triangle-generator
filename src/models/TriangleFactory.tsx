@@ -57,7 +57,7 @@ class VerifyNonZero implements TriangleRule {
 class SumOfInteriorAnglesRule implements TriangleRule {
     isApplicable(angles: number[], sides: number[]): boolean {
         const nonEmptyAngles = angles.filter(x => !isNaN(x));
-        if (nonEmptyAngles.length == 2) return true;
+        if (nonEmptyAngles.length === 2) return true;
         else return false;
     }
     apply(angles: number[], sides: number[]): number[][] {
@@ -107,8 +107,8 @@ class CosineRuleOfAngle implements TriangleRule {
         const nonEmptyAngles = angles.filter(x => !isNaN(x));
         const nonEmptyLengths = sides.filter(x => !isNaN(x));
         if (
-            nonEmptyAngles.length == 1 &&
-            nonEmptyLengths.length == 2 &&
+            nonEmptyAngles.length === 1 &&
+            nonEmptyLengths.length === 2 &&
             this.haveNoPairs(angles, sides)
         ) return true;
         else return false;

@@ -1,12 +1,12 @@
-import React, { useEffect, useState } from 'react';
-import Triangle from './domain/Triangle';
-import CanvasDrawer from './CanvasDrawer';
+import React, { useState } from 'react';
+import Triangle from './models/Triangle';
 import './App.css';
-import { TriangleFactory, TriangleDataError } from './domain/TriangleFactory';
+import { TriangleFactory, TriangleDataError } from './models/TriangleFactory';
 import { AnglesInputGroup, SidesInputGroup } from './components/TriangleDataInput';
 import RotationInput from './components/RotationInput';
 import {AngleLabelsInputGroup, SideLabelsInputGroup} from './components/TriangleLabelInput';
-import triangleLabelData from './domain/TriangleLabelData';
+import triangleLabelData from './models/TriangleLabelData';
+import Canvas from './components/Canvas';
 
 function App() {
   const [dpi, setDpi] = useState(300)
@@ -18,9 +18,6 @@ function App() {
   const [labelData, setLabelData] = useState(triangleLabelData)
   const [tabsOpen, setTabsOpen] = useState([true, false])
 
-  useEffect(() => {
-    redrawTriangle();
-  })
 
   function handleTabToggle(index: number) {
     setTabsOpen(tabsOpen.map((prevValue, i) => {
@@ -84,13 +81,7 @@ function App() {
 
     setTriangle(triangle);
   }
-  function redrawTriangle() {
-    if (triangle === null || !triangle.isComplete()) return;
 
-
-    const drawer = new CanvasDrawer();
-    drawer.drawTriangle(triangle, rotation, dpi, labelData);
-  }
 
   return (
     <div className="App">
@@ -143,7 +134,7 @@ function App() {
         </section>
       </div>
       <div className="display-panel">
-        <canvas id="myCanvas" width="400" height="400"></canvas>
+        <Canvas triangle={triangle} rotation={rotation} dpi={dpi} labelData={labelData}/>
       </div>
     </div>
   );

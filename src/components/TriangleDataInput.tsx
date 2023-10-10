@@ -1,5 +1,5 @@
 import React from "react";
-import Triangle from "../domain/Triangle";
+import Triangle from "../models/Triangle";
 import { roundToDecimal } from "../utils";
 
 function AnglesInputGroup({ getter, handler, triangle }: { getter: number[], handler: Function, triangle: Triangle | null }) {

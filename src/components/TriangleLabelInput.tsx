@@ -1,4 +1,4 @@
-import { ReactNode, useId, useState } from "react"
+import { ReactNode } from "react"
 
 function AngleLabelsInputGroup({ labelData, setLabelData }: { labelData: any, setLabelData: React.Dispatch<React.SetStateAction<any>> }) {
     const angleNames = ['\u{03b1}', '\u{03b2}', '\u{03b3}']
