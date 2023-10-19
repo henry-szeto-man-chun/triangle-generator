@@ -1,10 +1,12 @@
-import { useEffect, useRef } from "react";
+import { useContext, useEffect, useRef } from "react";
 import Triangle from "../models/Triangle";
 import { AngleArcs, AngleDegrees, AngleLabels, SideLabels, TriangleLabels } from "../models/TriangleLabels";
 import TrianglePoints from "../models/TrianglePoints";
+import { triangleContext } from "../models/TriangleContext";
 
-function Canvas({triangle, rotation, dpi, labelData} : {triangle: Triangle | null, rotation: number, dpi: number, labelData: any}) {
+function Canvas({ rotation, dpi, labelData }: { rotation: number, dpi: number, labelData: any }) {
     const canvasRef = useRef(null);
+    const triangle = useContext(triangleContext)
 
     useEffect(() => {
         if (triangle === null || !triangle.isComplete()) return;

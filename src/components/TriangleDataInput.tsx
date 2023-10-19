@@ -1,8 +1,9 @@
-import React from "react";
+import React, { useContext } from "react";
 import Triangle from "../models/Triangle";
 import { roundToDecimal } from "../utils";
+import { triangleContext } from "../models/TriangleContext";
 
-function AnglesInputGroup({ getter, handler, triangle }: { getter: number[], handler: Function, triangle: Triangle | null }) {
+function AnglesInputGroup({ getter, handler }: { getter: number[], handler: Function }) {
     const labels = ['\u{03b1}: ', '\u{03b2}: ', '\u{03b3}: ']
     const inputs = labels.map((label, index) =>
         <AngleInput
@@ -10,8 +11,7 @@ function AnglesInputGroup({ getter, handler, triangle }: { getter: number[], han
             label={label}
             getter={getter}
             index={index}
-            handler={handler}
-            triangle={triangle} />
+            handler={handler} />
     );
 
     return (
@@ -21,7 +21,8 @@ function AnglesInputGroup({ getter, handler, triangle }: { getter: number[], han
     )
 }
 
-function AngleInput({ label, getter, index, handler, triangle }: { label: string, getter: number[], index: number, handler: Function, triangle: Triangle | null }) {
+function AngleInput({ label, getter, index, handler }: { label: string, getter: number[], index: number, handler: Function }) {
+    const triangle = useContext(triangleContext)
     const id = React.useId()
     const inferredValue = (triangle !== null) ? triangle.angles[index] : NaN
 
@@ -44,7 +45,7 @@ function AngleInput({ label, getter, index, handler, triangle }: { label: string
     )
 }
 
-function SidesInputGroup({ getter, handler, triangle }: { getter: number[], handler: Function, triangle: Triangle | null }) {
+function SidesInputGroup({ getter, handler }: { getter: number[], handler: Function }) {
     const labels = ['a: ', 'b: ', 'c: '];
     const inputs = labels.map((label, index) =>
         <SideInput
@@ -52,8 +53,7 @@ function SidesInputGroup({ getter, handler, triangle }: { getter: number[], hand
             label={label}
             getter={getter}
             index={index}
-            handler={handler}
-            triangle={triangle} />
+            handler={handler} />
     );
 
     return (
@@ -63,7 +63,8 @@ function SidesInputGroup({ getter, handler, triangle }: { getter: number[], hand
     )
 }
 
-function SideInput({ label, getter, index, handler, triangle }: { label: string, getter: number[], index: number, handler: Function, triangle: Triangle | null }) {
+function SideInput({ label, getter, index, handler }: { label: string, getter: number[], index: number, handler: Function }) {
+    const triangle = useContext(triangleContext)
     const id = React.useId()
     const inferredValue = (triangle !== null) ? triangle.sides[index] : NaN
 
